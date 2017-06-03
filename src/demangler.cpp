@@ -1,5 +1,6 @@
 #include <demangler/demangler.hh>
 
+#include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <stdexcept>
@@ -65,6 +66,33 @@ int extractDecimal(gsl::cstring_span<>& symbol)
   return ret;
 }
 
+int extractSeqid(State& s)
+{
+  static auto const digits =
+      gsl::cstring_span<>{"0123456789ABCDEFGHIJKLMNOPQRSTUVVWXYZ"};
+  auto& symbol = s.remaining;
+  auto const posit = std::find(symbol.begin(), symbol.end(), '_');
+  if (posit == symbol.end())
+    throw std::runtime_error("Unfinished seq-id: " + gsl::to_string(symbol));
+  auto const len = std::distance(symbol.begin(), posit);
+  if (len == 0)
+  {
+    s.skipChars(1);
+    return 0;
+  }
+  auto ret = 0;
+  for (auto i = 0; i < len; ++i)
+  {
+    auto const digitit = std::find(digits.begin(), digits.end(), symbol[i]);
+    if (digitit == digits.end())
+      throw std::runtime_error("Invalid digit in seq-id: " +
+                               gsl::to_string(symbol));
+    ret = ret * digits.size() + std::distance(digits.begin(), digitit);
+  }
+  s.skipChars(len + 1);
+  return ret;
+}
+
 bool isSubstitution(gsl::cstring_span<> symbol)
 {
   return symbol[0] == 'S';
@@ -107,7 +135,7 @@ std::string demangleSeqSubstitution(State& state)
   auto const seqid = [&]() {
     try
     {
-      return extractDecimal(state.remaining);
+      return extractSeqid(state);
     }
     catch (std::runtime_error&)
     {
