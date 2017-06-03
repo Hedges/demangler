@@ -376,6 +376,27 @@ TEST_CASE("Preset substitution")
   }
 }
 
+TEST_CASE("Substitutions")
+{
+  // clang-format off
+  auto const data = TestData{
+    "_Z3foo3bar3bazS_S0_",
+    "foo(bar, baz, bar, baz)",
+    "foo",
+    "foo(bar, baz, bar, baz)",
+    "foo"
+  };
+  // clang-format on
+  CHECK_TEST(data);
+}
+
+TEST_CASE("User-defined types")
+{
+  auto const data = TestData{
+      "_Z3foo3bar3baz", "foo(bar, baz)", "foo", "foo(bar, baz)", "foo"};
+  CHECK_TEST(data);
+}
+
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")
 {
   for (auto i = 0u; i < ext_demangle_nsamples; ++i)

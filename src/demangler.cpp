@@ -44,7 +44,7 @@ struct State
   bool add_params;
   bool add_templates;
   std::string demangled;
-  std::vector<std::string> substitutions;
+  std::vector<gsl::cstring_span<>> substitutions;
 };
 
 int extractDecimal(gsl::cstring_span<>& symbol)
@@ -70,6 +70,7 @@ int extractSeqid(State& s)
 {
   static auto const digits =
       gsl::cstring_span<>{"0123456789ABCDEFGHIJKLMNOPQRSTUVVWXYZ"};
+  s.skipChars(1);
   auto& symbol = s.remaining;
   auto const posit = std::find(symbol.begin(), symbol.end(), '_');
   if (posit == symbol.end())
@@ -90,7 +91,7 @@ int extractSeqid(State& s)
     ret = ret * digits.size() + std::distance(digits.begin(), digitit);
   }
   s.skipChars(len + 1);
-  return ret;
+  return ret + 1;
 }
 
 bool isSubstitution(gsl::cstring_span<> symbol)
@@ -147,7 +148,7 @@ std::string demangleSeqSubstitution(State& state)
     throw std::runtime_error(
         "Invalid substitution seqid: " + std::to_string(seqid) + " (got " +
         std::to_string(state.substitutions.size()) + " so far)");
-  return state.substitutions[seqid];
+  return gsl::to_string(state.substitutions[seqid]);
 }
 
 std::string demangleSubstitution(State& state)
@@ -156,7 +157,7 @@ std::string demangleSubstitution(State& state)
   assert(isSubstitution(state.remaining));
   if (state.remaining.size() < 2)
     throw std::runtime_error("Trying to demangle too short substitution.");
-  if (std::isdigit(state.remaining[1]))
+  if (std::isdigit(state.remaining[1]) || state.remaining[1] == '_')
     return demangleSeqSubstitution(state);
   return demanglePresetSubstitution(state);
 }
@@ -189,6 +190,12 @@ std::string demangleType(State& s)
   assert(!s.empty());
   if (isSubstitution(s.remaining))
     return demangleSubstitution(s);
+  if (std::isdigit(s.nextChar()))
+  {
+    auto const name = extractSourceName(s.remaining);
+    s.substitutions.emplace_back(name);
+    return gsl::to_string(name);
+  }
   switch (s.nextChar())
   {
 #define CHAR_BUILTIN_TYPE(c, str) \
