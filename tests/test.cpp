@@ -19,6 +19,20 @@ struct TestData
 // It breaks the longer strings into undreadable bits.
 static TestData const samples[] = {
   {
+    "main",
+    "main",
+    "main",
+    "main",
+    "main"
+  },
+  {
+    "_Z3foov",
+    "foo()",
+    "foo",
+    "foo()",
+    "foo"
+  },
+  {
     "_ZNSaIcEC1ERKS_",
     "std::allocator<char>::allocator(std::allocator<char> const&)",
     "std::allocator<char>::allocator",
