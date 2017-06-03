@@ -21,6 +21,7 @@ include_directories(
 #sources files
 set(SRCS
   src/demangler.cpp
+  src/details/Demangler.cpp
 )
 
 #binaries
