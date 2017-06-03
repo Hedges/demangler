@@ -2,9 +2,7 @@
 
 #include <demangler/demangler.hh>
 
-// Test cases taken from demangle.
-// See LICENSES/demangle_LICENSE.
-namespace 
+namespace
 {
 struct TestData
 {
@@ -15,23 +13,10 @@ struct TestData
   std::string want_minimal;
 };
 
-// This array should not be clang-formatted.
-// It breaks the longer strings into undreadable bits.
-static TestData const samples[] = {
-  {
-    "main",
-    "main",
-    "main",
-    "main",
-    "main"
-  },
-  {
-    "_Z3foov",
-    "foo()",
-    "foo",
-    "foo()",
-    "foo"
-  },
+// These test cases were taken from demangle.
+// See LICENSES/demangle_LICENSE.
+// clang-format off
+static TestData const ext_demangle_samples[] = {
   {
     "_ZNSaIcEC1ERKS_",
     "std::allocator<char>::allocator(std::allocator<char> const&)",
@@ -285,19 +270,91 @@ static TestData const samples[] = {
     "operator.*",
   }
 };
+// clang-format on
 
-constexpr auto const nsamples = sizeof(samples) / sizeof(samples[0]);
+constexpr auto const ext_demangle_nsamples =
+    sizeof(ext_demangle_samples) / sizeof(ext_demangle_samples[0]);
 }
 
-TEST_CASE("Positive tests")
+#define CHECK_TEST(test)                                            \
+  auto const& input = test.input;                                   \
+  auto const& want = test.want;                                     \
+  auto const& want_no_params = test.want_no_params;                 \
+  auto const& want_no_template_param = test.want_no_template_param; \
+  auto const& want_minimal = test.want_minimal;                     \
+                                                                    \
+  CHECK(want == demangler::demangle(input));                        \
+  CHECK(want_no_params ==                                           \
+        demangler::demangle(input, demangler::NoParamTag{}));       \
+  CHECK(want_no_template_param ==                                   \
+        demangler::demangle(input, demangler::NoTemplateParamTag{}));
+
+TEST_CASE("Not-mangled symbol")
 {
-  for (auto i = 0u; i < nsamples; ++i)
+  auto const data = TestData{"main", "main", "main", "main", "main"};
+  CHECK_TEST(data);
+}
+
+TEST_CASE("void function")
+{
+  auto const data = TestData{"_Z3foov", "foo()", "foo", "foo()", "foo"};
+  CHECK_TEST(data);
+}
+
+TEST_CASE("One argument")
+{
+  auto const data = TestData{"_Z3fooi", "foo(int)", "foo", "foo(int)", "foo"};
+  CHECK_TEST(data);
+}
+
+TEST_CASE("Multiple arguments")
+{
+  auto const data = TestData{"_Z3fooijl",
+                             "foo(int, unsigned int, long)",
+                             "foo",
+                             "foo(int, unsigned int, long)",
+                             "foo"};
+  CHECK_TEST(data);
+}
+
+TEST_CASE("Builtin single-char types")
+{
+  // clang-format off
+  auto const data = TestData{
+    "_Z3foowbcahstijlmxynofdegz",
+    "foo(wchar_t, bool, char, signed char, unsigned char, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, __int128, unsigned __int128, float, double, long double, __float128, ...)",
+    "foo",
+    "foo(wchar_t, bool, char, signed char, unsigned char, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, __int128, unsigned __int128, float, double, long double, __float128, ...)",
+    "foo"
+  };
+  // clang-format on
+  CHECK_TEST(data);
+}
+
+TEST_CASE("Builtin multi-char types")
+{
+  auto const data =
+      TestData{"_Z3fooDdDeDfDhDiDsDaDcDnu3bar",
+               "foo(decimal64, decimal128, decimal32, half, char32_t, "
+               "char16_t, auto, decltype(auto), decltype(nullptr), bar)",
+               "foo",
+               "foo(decimal64, decimal128, decimal32, half, char32_t, "
+               "char16_t, auto, decltype(auto), decltype(nullptr), bar)",
+               "foo"};
+  // clang-format on
+  CHECK_TEST(data);
+}
+
+TEST_CASE("Positive tests", "[.][Ext-Demangle]")
+{
+  for (auto i = 0u; i < ext_demangle_nsamples; ++i)
   {
-    auto const& input = samples[i].input;
-    auto const& want = samples[i].want;
-    auto const& want_no_params = samples[i].want_no_params;
-    auto const& want_no_template_param = samples[i].want_no_template_param;
-    auto const& want_minimal = samples[i].want_minimal;
+    auto const& input = ext_demangle_samples[i].input;
+    auto const& want = ext_demangle_samples[i].want;
+    auto const& want_no_params = ext_demangle_samples[i].want_no_params;
+    auto const& want_no_template_param =
+        ext_demangle_samples[i].want_no_template_param;
+    auto const& want_minimal = ext_demangle_samples[i].want_minimal;
 
     CHECK(want == demangler::demangle(input));
     CHECK(want_no_params ==

@@ -32,6 +32,11 @@ struct State
     return this->remaining[0];
   }
 
+  bool empty() const noexcept
+  {
+    return this->remaining.empty();
+  }
+
   std::string const& symbol;
   gsl::cstring_span<> remaining;
   bool add_params;
@@ -47,14 +52,16 @@ gsl::cstring_span<> extractSourceName(gsl::cstring_span<>& symbol)
   if (symbol.empty())
     throw std::runtime_error("Extracting empty source name");
   if (!std::isdigit(symbol[0]))
-    throw std::runtime_error("Source name does not start with a digit");
+    throw std::runtime_error("Source name does not start with a digit: " +
+                             gsl::to_string(symbol));
   while (i < (unsigned)symbol.size() && std::isdigit(symbol[i]))
   {
     len = len * 10 + symbol[i] - '0';
     ++i;
   }
-  if (i + len >= (unsigned)(symbol.size()))
-    throw std::runtime_error("Source name does not fit in symbol");
+  if (i + len > (unsigned)(symbol.size()))
+    throw std::runtime_error("Source name does not fit in symbol: " +
+                             gsl::to_string(symbol));
   auto ret = symbol.subspan(i, len);
   symbol = symbol.subspan(i + len);
   return ret;
@@ -67,14 +74,75 @@ void demangleSpecialName(State& s)
   throw std::runtime_error("Demangling special names is not supported yet");
 }
 
+std::string demangleType(State& s)
+{
+  assert(!s.empty());
+  auto params = std::string{};
+  switch (s.nextChar())
+  {
+#define CHAR_BUILTIN_TYPE(c, str) \
+  case c:                         \
+    s.skipChars(1);               \
+    return str;                   \
+    break;
+    CHAR_BUILTIN_TYPE('v', "");
+    CHAR_BUILTIN_TYPE('w', "wchar_t");
+    CHAR_BUILTIN_TYPE('b', "bool");
+    CHAR_BUILTIN_TYPE('c', "char");
+    CHAR_BUILTIN_TYPE('a', "signed char");
+    CHAR_BUILTIN_TYPE('h', "unsigned char");
+    CHAR_BUILTIN_TYPE('s', "short");
+    CHAR_BUILTIN_TYPE('t', "unsigned short");
+    CHAR_BUILTIN_TYPE('i', "int");
+    CHAR_BUILTIN_TYPE('j', "unsigned int");
+    CHAR_BUILTIN_TYPE('l', "long");
+    CHAR_BUILTIN_TYPE('m', "unsigned long");
+    CHAR_BUILTIN_TYPE('x', "long long");
+    CHAR_BUILTIN_TYPE('y', "unsigned long long");
+    CHAR_BUILTIN_TYPE('n', "__int128");
+    CHAR_BUILTIN_TYPE('o', "unsigned __int128");
+    CHAR_BUILTIN_TYPE('f', "float");
+    CHAR_BUILTIN_TYPE('d', "double");
+    CHAR_BUILTIN_TYPE('e', "long double");
+    CHAR_BUILTIN_TYPE('g', "__float128");
+    CHAR_BUILTIN_TYPE('z', "...");
+  case 'u':
+  {
+    s.skipChars(1);
+    auto const vendorname = extractSourceName(s.remaining);
+    return gsl::to_string(vendorname);
+    break;
+  }
+  case 'D':
+    s.skipChars(1);
+    switch (s.nextChar())
+    {
+      CHAR_BUILTIN_TYPE('d', "decimal64");
+      CHAR_BUILTIN_TYPE('e', "decimal128");
+      CHAR_BUILTIN_TYPE('f', "decimal32");
+      CHAR_BUILTIN_TYPE('h', "half");
+      CHAR_BUILTIN_TYPE('i', "char32_t");
+      CHAR_BUILTIN_TYPE('s', "char16_t");
+      CHAR_BUILTIN_TYPE('a', "auto");
+      CHAR_BUILTIN_TYPE('c', "decltype(auto)");
+      CHAR_BUILTIN_TYPE('n', "decltype(nullptr)");
+    default:
+      throw std::runtime_error("Unknown type: D" + gsl::to_string(s.remaining));
+    }
+    break;
+  }
+#undef CHAR_BUILTIN_TYPE
+
+  throw std::runtime_error("Unknown type: " + gsl::to_string(s.remaining));
+}
+
 void demangleBareFunctionType(State& s)
 {
-  assert(!s.remaining.empty());
-  auto params = std::string{};
-  if (s.nextChar() == 'v')
-    ;
-  else
-    throw std::runtime_error("Failed to parse bare function type");
+  assert(!s.empty());
+  auto params = demangleType(s);
+  if (!params.empty()) // If params is empty, function type is void (no param).
+    while (!s.empty())
+      params += ", " + demangleType(s);
   if (s.add_params)
     s.demangled += '(' + params + ')';
 }
