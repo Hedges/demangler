@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cctype>
 #include <stdexcept>
+#include <vector>
 
 #include <gsl/string_span>
 
@@ -42,7 +43,95 @@ struct State
   bool add_params;
   bool add_templates;
   std::string demangled;
+  std::vector<std::string> substitutions;
 };
+
+int extractDecimal(gsl::cstring_span<>& symbol)
+{
+  auto i = 0u;
+  auto ret = 0u;
+
+  if (symbol.empty())
+    throw std::runtime_error("Extracting empty decimal");
+  if (!std::isdigit(symbol[0]))
+    throw std::runtime_error("Extracting decimal which is not decimal: " +
+                             gsl::to_string(symbol));
+  while (i < (unsigned)symbol.size() && std::isdigit(symbol[i]))
+  {
+    ret = ret * 10 + symbol[i] - '0';
+    ++i;
+  }
+  symbol = symbol.subspan(i);
+  return ret;
+}
+
+bool isSubstitution(gsl::cstring_span<> symbol)
+{
+  return symbol[0] == 'S';
+}
+
+std::string demanglePresetSubstitution(State& state)
+{
+  auto& symbol = state.remaining;
+  if (symbol.empty())
+    throw std::runtime_error("Trying to demangle empty preset substitution");
+  // Preset substitution is at least 2 chars.
+  if (symbol.size() < 2)
+    throw std::runtime_error(
+        "Trying to demangle too short preset substitution.");
+  if (symbol[0] != 'S')
+    return "";
+  switch (symbol[1])
+  {
+#define CHAR_PRESET_SUBSTITUTION(c, str) \
+  case c:                                \
+    symbol = symbol.subspan(2);          \
+    return str;                          \
+    break
+    // clang-format off
+    CHAR_PRESET_SUBSTITUTION('t', "std");
+    CHAR_PRESET_SUBSTITUTION('a', "std::allocator");
+    CHAR_PRESET_SUBSTITUTION('b', "std::basic_string");
+    CHAR_PRESET_SUBSTITUTION('s', "std::basic_string<char, std::char_traits<char>, std::allocator<char>>");
+    CHAR_PRESET_SUBSTITUTION('i', "std::basic_istream<char, std::char_traits<char>>");
+    CHAR_PRESET_SUBSTITUTION('o', "std::basic_ostream<char, std::char_traits<char>>");
+    CHAR_PRESET_SUBSTITUTION('d', "std::basic_iostream<char, std::char_traits<char>>");
+    // clang-format on
+  }
+  throw std::runtime_error("Invalid preset substitution: " +
+                           gsl::to_string(symbol));
+}
+
+std::string demangleSeqSubstitution(State& state)
+{
+  auto const seqid = [&]() {
+    try
+    {
+      return extractDecimal(state.remaining);
+    }
+    catch (std::runtime_error&)
+    {
+      throw std::runtime_error("Failed to extract seq-id for substitution: " +
+                               gsl::to_string(state.remaining));
+    }
+  }();
+  if ((unsigned)seqid >= state.substitutions.size())
+    throw std::runtime_error(
+        "Invalid substitution seqid: " + std::to_string(seqid) + " (got " +
+        std::to_string(state.substitutions.size()) + " so far)");
+  return state.substitutions[seqid];
+}
+
+std::string demangleSubstitution(State& state)
+{
+  assert(!state.empty());
+  assert(isSubstitution(state.remaining));
+  if (state.remaining.size() < 2)
+    throw std::runtime_error("Trying to demangle too short substitution.");
+  if (std::isdigit(state.remaining[1]))
+    return demangleSeqSubstitution(state);
+  return demanglePresetSubstitution(state);
+}
 
 gsl::cstring_span<> extractSourceName(gsl::cstring_span<>& symbol)
 {
@@ -77,7 +166,8 @@ void demangleSpecialName(State& s)
 std::string demangleType(State& s)
 {
   assert(!s.empty());
-  auto params = std::string{};
+  if (isSubstitution(s.remaining))
+    return demangleSubstitution(s);
   switch (s.nextChar())
   {
 #define CHAR_BUILTIN_TYPE(c, str) \

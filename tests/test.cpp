@@ -333,16 +333,47 @@ TEST_CASE("Builtin single-char types")
 
 TEST_CASE("Builtin multi-char types")
 {
-  auto const data =
-      TestData{"_Z3fooDdDeDfDhDiDsDaDcDnu3bar",
-               "foo(decimal64, decimal128, decimal32, half, char32_t, "
-               "char16_t, auto, decltype(auto), decltype(nullptr), bar)",
-               "foo",
-               "foo(decimal64, decimal128, decimal32, half, char32_t, "
-               "char16_t, auto, decltype(auto), decltype(nullptr), bar)",
-               "foo"};
+  // clang-format off
+  auto const data = TestData{
+    "_Z3fooDdDeDfDhDiDsDaDcDnu3bar",
+    "foo(decimal64, decimal128, decimal32, half, char32_t, char16_t, auto, decltype(auto), decltype(nullptr), bar)",
+    "foo",
+    "foo(decimal64, decimal128, decimal32, half, char32_t, char16_t, auto, decltype(auto), decltype(nullptr), bar)",
+    "foo"
+  };
   // clang-format on
   CHECK_TEST(data);
+}
+
+TEST_CASE("Preset substitution")
+{
+  SECTION("One")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3fooSs",
+      "foo(std::basic_string<char, std::char_traits<char>, std::allocator<char>>)",
+      "foo",
+      "foo(std::basic_string<char, std::char_traits<char>, std::allocator<char>>)",
+      "foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("All the rest")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3fooSaSbSsSiSoSd",
+      "foo(std::allocator, std::basic_string, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::basic_istream<char, std::char_traits<char>>, std::basic_ostream<char, std::char_traits<char>>, std::basic_iostream<char, std::char_traits<char>>)",
+      "foo",
+      "foo(std::allocator, std::basic_string, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::basic_istream<char, std::char_traits<char>>, std::basic_ostream<char, std::char_traits<char>>, std::basic_iostream<char, std::char_traits<char>>)",
+      "foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")
