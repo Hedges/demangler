@@ -163,24 +163,17 @@ std::string demangleSubstitution(State& state)
 
 gsl::cstring_span<> extractSourceName(gsl::cstring_span<>& symbol)
 {
-  auto i = 0u;
-  auto len = 0u;
-
   if (symbol.empty())
     throw std::runtime_error("Extracting empty source name");
   if (!std::isdigit(symbol[0]))
     throw std::runtime_error("Source name does not start with a digit: " +
                              gsl::to_string(symbol));
-  while (i < (unsigned)symbol.size() && std::isdigit(symbol[i]))
-  {
-    len = len * 10 + symbol[i] - '0';
-    ++i;
-  }
-  if (i + len > (unsigned)(symbol.size()))
+  auto len = extractDecimal(symbol);
+  if (len > symbol.size())
     throw std::runtime_error("Source name does not fit in symbol: " +
                              gsl::to_string(symbol));
-  auto ret = symbol.subspan(i, len);
-  symbol = symbol.subspan(i + len);
+  auto ret = symbol.subspan(0, len);
+  symbol = symbol.subspan(len);
   return ret;
 }
 
