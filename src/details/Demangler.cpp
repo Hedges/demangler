@@ -31,48 +31,48 @@ void Demangler::demangle()
     this->demangled = symbol;
     return;
   }
-  this->skipChars(2);
+  this->advance(2);
   if (this->nextChar() == 'T')
-    this->demangleSpecialName();
+    this->nodeSpecialName();
   else
-    this->demangleData();
+    this->nodeEncoding();
   return;
 }
 
-void Demangler::demangleSpecialName()
+void Demangler::nodeSpecialName()
 {
-  // TODO(ethiraric): demangleSpecialName
+  // TODO(ethiraric): nodeSpecialName
   throw std::runtime_error("Demangling special names is not supported yet");
 }
 
-void Demangler::demangleData()
+void Demangler::nodeEncoding()
 {
-  auto const name = this->extractSourceName();
+  auto const name = this->nodeSourceName();
   this->demangled.append(name.begin(), name.end());
   if (this->remaining.empty())
     return;
-  this->demangleBareFunctionType();
+  this->nodeBareFunctionType();
 }
 
-void Demangler::demangleBareFunctionType()
+void Demangler::nodeBareFunctionType()
 {
   assert(!this->empty());
-  auto params = this->demangleType();
+  auto params = this->nodeType();
   if (!params.empty()) // If params is empty, function type is void (no param).
     while (!this->empty())
-      params += ", " + this->demangleType();
+      params += ", " + this->nodeType();
   if (this->add_params)
     this->demangled += '(' + params + ')';
 }
 
-std::string Demangler::demangleType()
+std::string Demangler::nodeType()
 {
   assert(!this->empty());
   if (this->nextIsSubstitution())
-    return this->demangleSubstitution();
+    return this->nodeSubstitution();
   if (std::isdigit(this->nextChar()))
   {
-    auto const name = this->extractSourceName();
+    auto const name = this->nodeSourceName();
     this->substitutions.emplace_back(name);
     return gsl::to_string(name);
   }
@@ -80,7 +80,7 @@ std::string Demangler::demangleType()
   {
 #define CHAR_BUILTIN_TYPE(c, str) \
   case c:                         \
-    this->skipChar();           \
+    this->advance(1);             \
     return str;                   \
     break;
     CHAR_BUILTIN_TYPE('v', "");
@@ -106,13 +106,13 @@ std::string Demangler::demangleType()
     CHAR_BUILTIN_TYPE('z', "...");
   case 'u':
   {
-    this->skipChar();
-    auto const vendorname = this->extractSourceName();
+    this->advance(1);
+    auto const vendorname = this->nodeSourceName();
     return gsl::to_string(vendorname);
     break;
   }
   case 'D':
-    this->skipChar();
+    this->advance(1);
     switch (this->nextChar())
     {
       CHAR_BUILTIN_TYPE('d', "decimal64");
@@ -134,14 +134,14 @@ std::string Demangler::demangleType()
   throw std::runtime_error("Unknown type: " + this->remainingStr());
 }
 
-gsl::cstring_span<> Demangler::extractSourceName()
+gsl::cstring_span<> Demangler::nodeSourceName()
 {
   if (this->remaining.empty())
     throw std::runtime_error("Extracting empty source name");
   if (!std::isdigit(this->remaining[0]))
     throw std::runtime_error("Source name does not start with a digit: " +
                              this->remainingStr());
-  auto len = extractDecimal();
+  auto len = nodeNumber();
   if (len > this->remaining.size())
     throw std::runtime_error("Source name does not fit in symbol: " +
                              this->remainingStr());
@@ -150,7 +150,7 @@ gsl::cstring_span<> Demangler::extractSourceName()
   return ret;
 }
 
-int Demangler::extractDecimal()
+int Demangler::nodeNumber()
 {
   auto i = 0u;
   auto ret = 0u;
@@ -166,34 +166,36 @@ int Demangler::extractDecimal()
     ret = ret * 10 + this->remaining[i] - '0';
     ++i;
   }
-  this->skipChars(i);
+  this->advance(i);
   return ret;
 }
 
-int Demangler::extractSeqid()
+int Demangler::nodeSeqId()
 {
   static auto const digits =
       gsl::cstring_span<>{"0123456789ABCDEFGHIJKLMNOPQRSTUVVWXYZ"};
-  this->skipChar();
-  auto const posit = std::find(this->remaining.begin(), this->remaining.end(), '_');
+  this->advance(1);
+  auto const posit =
+      std::find(this->remaining.begin(), this->remaining.end(), '_');
   if (posit == this->remaining.end())
     throw std::runtime_error("Unfinished seq-id: " + this->remainingStr());
   auto const len = std::distance(this->remaining.begin(), posit);
   if (len == 0)
   {
-    this->skipChar();
+    this->advance(1);
     return 0;
   }
   auto ret = 0;
   for (auto i = 0; i < len; ++i)
   {
-    auto const digitit = std::find(digits.begin(), digits.end(), this->remaining[i]);
+    auto const digitit =
+        std::find(digits.begin(), digits.end(), this->remaining[i]);
     if (digitit == digits.end())
       throw std::runtime_error("Invalid digit in seq-id: " +
                                this->remainingStr());
     ret = ret * digits.size() + std::distance(digits.begin(), digitit);
   }
-  this->skipChars(len + 1);
+  this->advance(len + 1);
   return ret + 1;
 }
 
@@ -202,18 +204,18 @@ bool Demangler::nextIsSubstitution() const noexcept
   return this->remaining[0] == 'S';
 }
 
-std::string Demangler::demangleSubstitution()
+std::string Demangler::nodeSubstitution()
 {
   assert(!this->empty());
   assert(this->nextIsSubstitution());
   if (this->remaining.size() < 2)
     throw std::runtime_error("Trying to demangle too short substitution.");
   if (std::isdigit(this->remaining[1]) || this->remaining[1] == '_')
-    return this->demangleSeqSubstitution();
-  return this->demanglePresetSubstitution();
+    return this->nodeSubstitutionSeqId();
+  return this->nodeSubstitutionSx();
 }
 
-std::string Demangler::demanglePresetSubstitution()
+std::string Demangler::nodeSubstitutionSx()
 {
   if (this->empty())
     throw std::runtime_error("Trying to demangle empty preset substitution");
@@ -227,7 +229,7 @@ std::string Demangler::demanglePresetSubstitution()
   {
 #define CHAR_PRESET_SUBSTITUTION(c, str) \
   case c:                                \
-    this->skipChars(2);                  \
+    this->advance(2);                    \
     return str;                          \
     break
     // clang-format off
@@ -244,12 +246,12 @@ std::string Demangler::demanglePresetSubstitution()
                            this->remainingStr());
 }
 
-std::string Demangler::demangleSeqSubstitution()
+std::string Demangler::nodeSubstitutionSeqId()
 {
   auto const seqid = [&]() {
     try
     {
-      return this->extractSeqid();
+      return this->nodeSeqId();
     }
     catch (std::runtime_error&)
     {
@@ -264,13 +266,7 @@ std::string Demangler::demangleSeqSubstitution()
   return gsl::to_string(this->substitutions[seqid]);
 }
 
-void Demangler::skipChar() noexcept
-{
-  assert(!this->remaining.empty());
-  this->remaining = this->remaining.subspan(1);
-}
-
-void Demangler::skipChars(unsigned int n) noexcept
+void Demangler::advance(unsigned int n) noexcept
 {
   assert(n <= (unsigned)(this->remaining.size()));
   this->remaining = this->remaining.subspan(n);

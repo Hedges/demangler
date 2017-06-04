@@ -26,25 +26,24 @@ public:
 private:
   // High level methods.
   void demangle();
-  void demangleSpecialName();
-  void demangleData();
-  void demangleBareFunctionType();
-  std::string demangleType();
+  void nodeSpecialName();
+  void nodeEncoding();
+  void nodeBareFunctionType();
+  std::string nodeType();
 
   // Components extraction methods.
-  gsl::cstring_span<> extractSourceName();
-  int extractDecimal();
-  int extractSeqid();
+  gsl::cstring_span<> nodeSourceName();
+  int nodeNumber();
+  int nodeSeqId();
 
   // Substitution methods.
   bool nextIsSubstitution() const noexcept;
-  std::string demangleSubstitution();
-  std::string demanglePresetSubstitution();
-  std::string demangleSeqSubstitution();
+  std::string nodeSubstitution();
+  std::string nodeSubstitutionSx();
+  std::string nodeSubstitutionSeqId();
 
   // Utility (mostly parsing-related) methods.
-  void skipChar() noexcept;
-  void skipChars(unsigned int n) noexcept;
+  void advance(unsigned int n) noexcept;
   char nextChar() const noexcept;
   bool empty() const noexcept;
   std::string remainingStr() const;
