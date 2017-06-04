@@ -37,8 +37,10 @@ private:
   std::string nodeUnscopedName();
   std::string nodeUnqualifiedName();
   gsl::cstring_span<> nodeSourceName();
+  std::string nodeTemplateParam();
   std::string nodeTemplateArgs();
   std::string nodeTemplateArg();
+  std::string nodePrefix();
 
   // Expression methods
   std::string nodeExprPrimary();

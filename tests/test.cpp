@@ -397,7 +397,7 @@ TEST_CASE("User-defined types")
   CHECK_TEST(data);
 }
 
-TEST_CASE("Template", "[Template]")
+TEST_CASE("Template")
 {
   SECTION("One argument")
   {
@@ -422,6 +422,37 @@ TEST_CASE("Template", "[Template]")
       "foo",
       "foo(TemplatedClass)",
       "foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+}
+
+TEST_CASE("Namespace")
+{
+  SECTION("Simple")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_ZN3Bar3fooEv",
+      "Bar::foo()",
+      "Bar::foo",
+      "Bar::foo()",
+      "Bar::foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("Nested")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_ZN3Baz3Bar3fooEv",
+      "Baz::Bar::foo()",
+      "Baz::Bar::foo",
+      "Baz::Bar::foo()",
+      "Baz::Bar::foo"
     };
     // clang-format on
     CHECK_TEST(data);

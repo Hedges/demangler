@@ -150,7 +150,17 @@ std::string Demangler::nodeName()
 
 std::string Demangler::nodeNestedName()
 {
-  throw std::runtime_error("nested-name currently unsupported");
+  assert(this->nextChar() == 'N');
+  this->advance(1);
+  auto ret = std::string{};
+  while (this->nextChar() != 'E')
+  {
+    if (!ret.empty())
+      ret += "::";
+    ret += this->nodePrefix();
+  }
+  this->advance(1);
+  return ret;
 }
 
 std::string Demangler::nodeUnscopedName()
@@ -165,7 +175,7 @@ std::string Demangler::nodeUnqualifiedName()
 {
   if (std::isdigit(this->nextChar()))
     return gsl::to_string(this->nodeSourceName());
-  throw std::runtime_error("Unknown unqualified-name");
+  throw std::runtime_error("Unknown unqualified-name: " + this->remainingStr());
 }
 
 gsl::cstring_span<> Demangler::nodeSourceName()
@@ -182,6 +192,11 @@ gsl::cstring_span<> Demangler::nodeSourceName()
   auto ret = this->remaining.subspan(0, len);
   this->remaining = this->remaining.subspan(len);
   return ret;
+}
+
+std::string Demangler::nodeTemplateParam()
+{
+  throw std::runtime_error("template-param unsupported");
 }
 
 std::string Demangler::nodeTemplateArgs()
@@ -214,6 +229,13 @@ std::string Demangler::nodeTemplateArg()
     throw std::runtime_error("argument pack unsupported in template-arg");
   else
     return this->nodeType();
+}
+
+std::string Demangler::nodePrefix()
+{
+  if (this->nextChar() == 'T')
+    return this->nodeTemplateParam();
+  return this->nodeUnqualifiedName();
 }
 
 std::string Demangler::nodeExprPrimary()
