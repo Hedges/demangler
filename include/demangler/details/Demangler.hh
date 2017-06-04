@@ -37,6 +37,11 @@ private:
   std::string nodeUnscopedName();
   std::string nodeUnqualifiedName();
   gsl::cstring_span<> nodeSourceName();
+  std::string nodeTemplateArgs();
+  std::string nodeTemplateArg();
+
+  // Expression methods
+  std::string nodeExprPrimary();
 
   // Components extraction methods.
   int nodeNumber();
@@ -59,7 +64,7 @@ private:
   bool add_params;
   bool add_templates;
   std::string demangled;
-  std::vector<gsl::cstring_span<>> substitutions;
+  std::vector<std::string> substitutions;
 };
 }
 }

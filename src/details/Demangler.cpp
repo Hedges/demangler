@@ -47,7 +47,7 @@ void Demangler::nodeSpecialName()
 
 void Demangler::nodeEncoding()
 {
-  auto const name = this->nodeSourceName();
+  auto const name = this->nodeName();
   this->demangled.append(name.begin(), name.end());
   if (this->remaining.empty())
     return;
@@ -72,9 +72,9 @@ std::string Demangler::nodeType()
     return this->nodeSubstitution();
   if (std::isdigit(this->nextChar()))
   {
-    auto const name = this->nodeSourceName();
+    auto const name = this->nodeName();
     this->substitutions.emplace_back(name);
-    return gsl::to_string(name);
+    return name;
   }
   switch (this->nextChar())
   {
@@ -138,7 +138,14 @@ std::string Demangler::nodeName()
 {
   if (this->nextChar() == 'N')
     return this->nodeNestedName();
-  throw std::runtime_error("Unknown name");
+  auto ret = std::string{};
+  if (std::isdigit(this->nextChar()))
+    ret = this->nodeUnscopedName();
+  else
+    throw std::runtime_error("Unsupported name: " + this->remainingStr());
+  if (!this->empty() && this->nextChar() == 'I')
+    return ret + this->nodeTemplateArgs();
+  return ret;
 }
 
 std::string Demangler::nodeNestedName()
@@ -175,6 +182,43 @@ gsl::cstring_span<> Demangler::nodeSourceName()
   auto ret = this->remaining.subspan(0, len);
   this->remaining = this->remaining.subspan(len);
   return ret;
+}
+
+std::string Demangler::nodeTemplateArgs()
+{
+  assert(this->nextChar() == 'I');
+  this->advance(1);
+
+  // TODO(ethiraric): Avoid allocating everything if add_templates == false.
+  auto ret = std::string{"<"};
+  while (this->nextChar() != 'E')
+  {
+    if (ret.size() > 1)
+      ret += ", ";
+    ret += this->nodeTemplateArg();
+    if (this->empty())
+      throw std::runtime_error("Unfinished template-args");
+  }
+  this->advance(1);
+  ret += '>';
+  return this->add_templates ? ret : "";
+}
+
+std::string Demangler::nodeTemplateArg()
+{
+  if (this->nextChar() == 'L')
+    return this->nodeExprPrimary();
+  else if (this->nextChar() == 'X')
+    throw std::runtime_error("expression unsupported in template-arg");
+  else if (this->nextChar() == 'J')
+    throw std::runtime_error("argument pack unsupported in template-arg");
+  else
+    return this->nodeType();
+}
+
+std::string Demangler::nodeExprPrimary()
+{
+  throw std::runtime_error("expr-primary unsupported");
 }
 
 int Demangler::nodeNumber()
@@ -290,7 +334,7 @@ std::string Demangler::nodeSubstitutionSeqId()
     throw std::runtime_error(
         "Invalid substitution seqid: " + std::to_string(seqid) + " (got " +
         std::to_string(this->substitutions.size()) + " so far)");
-  return gsl::to_string(this->substitutions[seqid]);
+  return this->substitutions[seqid];
 }
 
 void Demangler::advance(unsigned int n) noexcept
