@@ -31,8 +31,14 @@ private:
   void nodeBareFunctionType();
   std::string nodeType();
 
-  // Components extraction methods.
+  // Name methods.
+  std::string nodeName();
+  std::string nodeNestedName();
+  std::string nodeUnscopedName();
+  std::string nodeUnqualifiedName();
   gsl::cstring_span<> nodeSourceName();
+
+  // Components extraction methods.
   int nodeNumber();
   int nodeSeqId();
 

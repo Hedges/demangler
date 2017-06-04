@@ -134,6 +134,33 @@ std::string Demangler::nodeType()
   throw std::runtime_error("Unknown type: " + this->remainingStr());
 }
 
+std::string Demangler::nodeName()
+{
+  if (this->nextChar() == 'N')
+    return this->nodeNestedName();
+  throw std::runtime_error("Unknown name");
+}
+
+std::string Demangler::nodeNestedName()
+{
+  throw std::runtime_error("nested-name currently unsupported");
+}
+
+std::string Demangler::nodeUnscopedName()
+{
+  if (this->remaining.size() > 2 && this->remaining[0] == 'S' &&
+      this->remaining[1] == 't')
+    return "std::" + this->nodeUnqualifiedName();
+  return this->nodeUnqualifiedName();
+}
+
+std::string Demangler::nodeUnqualifiedName()
+{
+  if (std::isdigit(this->nextChar()))
+    return gsl::to_string(this->nodeSourceName());
+  throw std::runtime_error("Unknown unqualified-name");
+}
+
 gsl::cstring_span<> Demangler::nodeSourceName()
 {
   if (this->remaining.empty())
@@ -201,7 +228,7 @@ int Demangler::nodeSeqId()
 
 bool Demangler::nextIsSubstitution() const noexcept
 {
-  return this->remaining[0] == 'S';
+  return this->remaining.size() >= 2 && this->remaining[0] == 'S';
 }
 
 std::string Demangler::nodeSubstitution()
