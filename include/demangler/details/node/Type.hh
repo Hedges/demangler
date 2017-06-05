@@ -27,7 +27,10 @@ public:
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
 
-  static std::unique_ptr<Type> parse(State &s);
+  static std::unique_ptr<Type> parse(State& s);
+
+private:
+  static std::unique_ptr<Type> parseD(State& s);
 };
 }
 }

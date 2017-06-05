@@ -28,6 +28,7 @@ set(SRCS
   src/details/node/Encoding.cpp
   src/details/node/MangledName.cpp
   src/details/node/Name.cpp
+  src/details/node/SourceName.cpp
   src/details/node/Type.cpp
   src/details/Parser.cpp
 )

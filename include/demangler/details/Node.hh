@@ -20,12 +20,13 @@ public:
   using string_type = gsl::cstring_span<>;
   enum class Type
   {
-    MangledName,
-    Encoding,
-    Name,
     BareFunctionType,
-    Type,
     BuiltinType,
+    Encoding,
+    MangledName,
+    Name,
+    SourceName,
+    Type,
   };
 
   explicit Node(Type t) noexcept;
