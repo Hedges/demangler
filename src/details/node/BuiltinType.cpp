@@ -22,6 +22,11 @@ std::ostream& BuiltinType::print(PrintOptions const&, std::ostream& out) const
   printStringSpan(out, this->builtintype);
   return out;
 }
+
+gsl::cstring_span<> BuiltinType::getTypeName() const noexcept
+{
+  return this->builtintype;
+}
 }
 }
 }

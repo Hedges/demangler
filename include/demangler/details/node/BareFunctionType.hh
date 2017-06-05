@@ -28,6 +28,9 @@ public:
                       std::ostream& out) const override final;
 
   static std::unique_ptr<BareFunctionType> parse(State &s);
+
+private:
+  bool isVoidFunction() const noexcept;
 };
 }
 }

@@ -1,9 +1,12 @@
 #include <demangler/details/node/BareFunctionType.hh>
+#include <iostream>
 
+#include <algorithm>
 #include <cassert>
 #include <stdexcept>
 
 #include <demangler/details/node/Type.hh>
+#include <demangler/details/node/BuiltinType.hh>
 
 namespace demangler
 {
@@ -18,6 +21,11 @@ BareFunctionType::BareFunctionType() noexcept : Node{Type::BareFunctionType}
 std::ostream& BareFunctionType::print(PrintOptions const& opt, std::ostream& out) const
 {
   assert(this->getNodeCount() != 0);
+  if (!opt.add_parameters)
+    return out;
+  if (this->isVoidFunction())
+    return (out << "()");
+
   out << '(';
   for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
   {
@@ -38,6 +46,22 @@ std::unique_ptr<BareFunctionType> BareFunctionType::parse(State &s)
     ret->addNode(std::move(type));
   }
   return ret;
+}
+
+bool BareFunctionType::isVoidFunction() const noexcept
+{
+  if (this->getNodeCount() == 1)
+  {
+    // Get the Type node first, then the BuiltinType.
+    auto const* node = this->getNode(0)->getNode(0);
+    if (node->getType() == Type::BuiltinType)
+    {
+      auto btype = static_cast<BuiltinType const*>(node)->getTypeName();
+      if (btype.size() == 4 && std::equal(btype.begin(), btype.end(), "void"))
+        return true;
+    }
+  }
+  return false;
 }
 }
 }

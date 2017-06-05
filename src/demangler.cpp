@@ -14,7 +14,7 @@ std::string demangle(std::string const& symbol)
   if (!ast)
     return symbol;
   auto ss = std::stringstream{};
-  details::PrintOptions o;
+  details::PrintOptions o{true, true};
   ast->print(o, ss);
   return ss.str();
 }

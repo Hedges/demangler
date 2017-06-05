@@ -26,6 +26,7 @@ public:
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  gsl::cstring_span<> getTypeName() const noexcept;
 
 private:
   gsl::cstring_span<> builtintype;
