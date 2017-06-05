@@ -24,6 +24,10 @@ struct State
   {
     return this->symbol.empty();
   }
+  char nextChar() const noexcept
+  {
+    return this->symbol[0];
+  }
 
   gsl::cstring_span<> symbol;
   Node* parent;

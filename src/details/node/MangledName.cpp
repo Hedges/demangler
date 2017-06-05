@@ -22,7 +22,7 @@ std::ostream& MangledName::print(PrintOptions const& opt,
 std::unique_ptr<MangledName> MangledName::parse(State &s)
 {
   if (!isMangled(s.symbol))
-    return nullptr;
+    throw std::runtime_error("Expected mangled-name: " + s.toString());
   s.advance(2);
   auto encoding = Encoding::parse(s);
   auto ret = std::make_unique<MangledName>();

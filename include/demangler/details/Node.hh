@@ -22,7 +22,10 @@ public:
   {
     MangledName,
     Encoding,
-    Name
+    Name,
+    BareFunctionType,
+    Type,
+    BuiltinType,
   };
 
   explicit Node(Type t) noexcept;

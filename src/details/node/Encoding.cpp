@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include <demangler/details/Utils.hh>
+#include <demangler/details/node/BareFunctionType.hh>
 #include <demangler/details/node/Name.hh>
 
 namespace demangler
@@ -24,11 +25,12 @@ std::ostream& Encoding::print(PrintOptions const& opt, std::ostream& out) const
   return out;
 }
 
-std::unique_ptr<Encoding> Encoding::parse(State &s)
+std::unique_ptr<Encoding> Encoding::parse(State& s)
 {
-  auto name = Name::parse(s);
   auto ret = std::make_unique<Encoding>();
-  ret->addNode(std::move(name));
+  ret->addNode(Name::parse(s));
+  if (!s.empty())
+    ret->addNode(BareFunctionType::parse(s));
   return ret;
 }
 }
