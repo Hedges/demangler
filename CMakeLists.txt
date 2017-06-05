@@ -9,7 +9,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
 option(DEMANGLER_BUILD_EXECUTABLE "Build a command-line executable to demangle" ON)
 option(DEMANGLER_BUILD_TESTS "Build the demangler tests" ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wshadow")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wshadow -ggdb3")
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -22,6 +22,11 @@ include_directories(
 set(SRCS
   src/demangler.cpp
   src/details/Demangler.cpp
+  src/details/Node.cpp
+  src/details/Parser.cpp
+  src/details/node/MangledName.cpp
+  src/details/node/Encoding.cpp
+  src/details/node/Name.cpp
 )
 
 #binaries
