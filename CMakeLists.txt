@@ -29,6 +29,8 @@ set(SRCS
   src/details/node/Encoding.cpp
   src/details/node/MangledName.cpp
   src/details/node/Name.cpp
+  src/details/node/NestedName.cpp
+  src/details/node/Prefix.cpp
   src/details/node/SeqId.cpp
   src/details/node/SourceName.cpp
   src/details/node/Substitution.cpp

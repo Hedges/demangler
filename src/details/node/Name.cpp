@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include <demangler/details/Utils.hh>
+#include <demangler/details/node/NestedName.hh>
 #include <demangler/details/node/TemplateArgs.hh>
 #include <demangler/details/node/UnqualifiedName.hh>
 #include <demangler/details/node/UnscopedName.hh>
@@ -31,7 +32,10 @@ std::unique_ptr<Name> Name::parse(State& s)
 {
   auto ret = std::make_unique<Name>();
 
-  ret->addNode(UnqualifiedName::parse(s));
+  if (s.nextChar() == 'N')
+    ret->addNode(NestedName::parse(s));
+  else
+    ret->addNode(UnqualifiedName::parse(s));
   if (!s.empty() && s.nextChar() == 'I')
     ret->addNode(TemplateArgs::parse(s));
   return ret;

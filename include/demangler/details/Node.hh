@@ -26,6 +26,8 @@ public:
     Encoding,
     MangledName,
     Name,
+    NestedName,
+    Prefix,
     SourceName,
     Substitution,
     TemplateArg,
