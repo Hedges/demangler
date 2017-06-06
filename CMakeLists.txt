@@ -24,6 +24,7 @@ set(SRCS
   src/details/node/BareFunctionType.cpp
   src/details/node/BuiltinSubstitution.cpp
   src/details/node/BuiltinType.cpp
+  src/details/node/Constructor.cpp
   src/details/Node.cpp
   src/details/node/Encoding.cpp
   src/details/node/MangledName.cpp

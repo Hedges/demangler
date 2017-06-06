@@ -28,6 +28,7 @@ public:
                       std::ostream& out) const override final;
 
   static std::unique_ptr<SourceName> parse(State& s);
+  string_type getName() const noexcept;
 
 private:
   string_type name;

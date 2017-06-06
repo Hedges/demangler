@@ -460,6 +460,20 @@ TEST_CASE("Namespace")
   }
 }
 
+TEST_CASE("Constructor")
+{
+  // clang-format off
+  auto const data = TestData{
+    "_ZN3fooC1Ev",
+    "foo::foo()",
+    "foo::foo",
+    "foo::foo()",
+    "foo::foo"
+  };
+  // clang-format on
+  CHECK_TEST(data);
+}
+
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")
 {
   for (auto i = 0u; i < ext_demangle_nsamples; ++i)

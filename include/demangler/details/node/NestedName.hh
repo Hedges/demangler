@@ -28,6 +28,10 @@ public:
                       std::ostream& out) const override final;
 
   static std::unique_ptr<NestedName> parse(State& s);
+
+private:
+  // Returns, if any, the last name seen. Used for constructors and destructors.
+  static string_type getLastName(Node const* lastnode);
 };
 }
 }

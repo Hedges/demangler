@@ -23,6 +23,7 @@ public:
     BareFunctionType,
     BuiltinSubstitution,
     BuiltinType,
+    Constructor,
     Encoding,
     MangledName,
     Name,

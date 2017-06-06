@@ -24,11 +24,11 @@ std::ostream& Prefix::print(PrintOptions const& opt, std::ostream& out) const
   return out;
 }
 
-std::unique_ptr<Prefix> Prefix::parse(State& s)
+std::unique_ptr<Prefix> Prefix::parse(State& s, string_type ctorname)
 {
   auto ret = std::make_unique<Prefix>();
 
-  ret->addNode(UnqualifiedName::parse(s));
+  ret->addNode(UnqualifiedName::parse(s, ctorname));
   return ret;
 }
 }

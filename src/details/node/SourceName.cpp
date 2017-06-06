@@ -40,6 +40,11 @@ std::unique_ptr<SourceName> SourceName::parse(State& s)
   s.advance(i + length);
   return ret;
 }
+
+SourceName::string_type SourceName::getName() const noexcept
+{
+  return this->name;
+}
 }
 }
 }

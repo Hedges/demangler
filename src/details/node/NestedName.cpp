@@ -6,6 +6,7 @@
 
 #include <demangler/details/Utils.hh>
 #include <demangler/details/node/Prefix.hh>
+#include <demangler/details/node/SourceName.hh>
 
 namespace demangler
 {
@@ -36,9 +37,16 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   auto const oldsymbol = s.symbol;
   s.advance(1);
   auto ret = std::make_unique<NestedName>();
+  Node const* lastnode = nullptr;
 
   while (!s.empty() && s.nextChar() != 'E')
-    ret->addNode(Prefix::parse(s));
+  {
+    if (lastnode)
+      ret->addNode(Prefix::parse(s, getLastName(lastnode)));
+    else
+      ret->addNode(Prefix::parse(s));
+    lastnode = ret->getNode(ret->getNodeCount() - 1);
+  }
   if (s.empty())
   {
     // Restore oldsymbol for displaying.
@@ -47,6 +55,21 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   }
   s.advance(1);
   return ret;
+}
+
+NestedName::string_type NestedName::getLastName(Node const* lastnode)
+{
+  if (lastnode->getType() == Type::Prefix)
+  {
+    auto const* node = lastnode->getNode(0);
+    if (node->getType() == Type::UnqualifiedName)
+    {
+      node = node->getNode(0);
+      if (node->getType() == Type::SourceName)
+        return static_cast<SourceName const*>(node)->getName();
+    }
+  }
+  return {};
 }
 }
 }
