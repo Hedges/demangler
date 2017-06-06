@@ -5,6 +5,8 @@
 #include <stdexcept>
 
 #include <demangler/details/Utils.hh>
+#include <demangler/details/node/TemplateArgs.hh>
+#include <demangler/details/node/UnqualifiedName.hh>
 #include <demangler/details/node/UnscopedName.hh>
 
 namespace demangler
@@ -19,8 +21,9 @@ Name::Name() noexcept : Node{Type::Name}
 
 std::ostream& Name::print(PrintOptions const& opt, std::ostream& out) const
 {
-  assert(this->getNodeCount() == 1);
-  this->getNode(0)->print(opt, out);
+  assert(this->getNodeCount() > 0);
+  for (auto i = 0u; i < this->getNodeCount(); ++i)
+    this->getNode(i)->print(opt, out);
   return out;
 }
 
@@ -28,7 +31,9 @@ std::unique_ptr<Name> Name::parse(State &s)
 {
   auto ret = std::make_unique<Name>();
 
-  ret->addNode(UnscopedName::parse(s));
+  ret->addNode(UnqualifiedName::parse(s));
+  if (!s.empty() && s.nextChar() == 'I')
+    ret->addNode(TemplateArgs::parse(s));
   return ret;
 }
 }

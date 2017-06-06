@@ -28,9 +28,12 @@ public:
     Name,
     SourceName,
     Substitution,
+    TemplateArg,
+    TemplateArgs,
     Type,
     UnqualifiedName,
     UnscopedName,
+    UnscopedTemplateName,
     UserSubstitution,
   };
 

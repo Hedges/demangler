@@ -32,9 +32,12 @@ set(SRCS
   src/details/node/SeqId.cpp
   src/details/node/SourceName.cpp
   src/details/node/Substitution.cpp
+  src/details/node/TemplateArg.cpp
+  src/details/node/TemplateArgs.cpp
   src/details/node/Type.cpp
   src/details/node/UnqualifiedName.cpp
   src/details/node/UnscopedName.cpp
+  src/details/node/UnscopedTemplateName.cpp
   src/details/node/UserSubstitution.cpp
   src/details/Parser.cpp
 )
