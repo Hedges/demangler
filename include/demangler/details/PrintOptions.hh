@@ -7,8 +7,8 @@ namespace details
 {
 struct PrintOptions
 {
-  bool add_templates;
   bool add_parameters;
+  bool add_templates;
 };
 }
 }

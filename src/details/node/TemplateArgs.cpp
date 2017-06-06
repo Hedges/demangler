@@ -21,6 +21,9 @@ std::ostream& TemplateArgs::print(PrintOptions const& opt,
                                   std::ostream& out) const
 {
   assert(this->getNodeCount() > 0);
+  if (!opt.add_templates)
+    return out;
+
   out << '<';
   for (auto i = 0u; i < this->getNodeCount(); ++i)
   {
