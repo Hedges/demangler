@@ -2,6 +2,7 @@
 #define DEMANGLER_DETAILS_STATE_HH_
 
 #include <memory>
+#include <vector>
 
 #include <gsl/string_span>
 
@@ -31,6 +32,7 @@ struct State
 
   gsl::cstring_span<> symbol;
   Node* parent;
+  std::vector<Node*> user_substitutions;
 };
 }
 }

@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include <demangler/details/node/BuiltinType.hh>
+#include <demangler/details/node/Name.hh>
 #include <demangler/details/node/SourceName.hh>
 #include <demangler/details/node/Substitution.hh>
 
@@ -85,6 +86,14 @@ std::unique_ptr<Type> Type::parse(State& s)
       ret->addNode(Substitution::parse(s));
       return ret;
     }
+  }
+  else if (std::isdigit(s.nextChar()))
+  {
+    auto name = Name::parse(s);
+    s.user_substitutions.emplace_back(name.get());
+    ret->addNode(std::move(name));
+    return ret;
+
   }
   throw std::runtime_error("Unknown type: " + s.toString());
 }

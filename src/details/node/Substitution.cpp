@@ -7,6 +7,8 @@
 
 #include <demangler/details/Utils.hh>
 #include <demangler/details/node/BuiltinSubstitution.hh>
+#include <demangler/details/node/SeqId.hh>
+#include <demangler/details/node/UserSubstitution.hh>
 
 namespace demangler
 {
@@ -40,9 +42,42 @@ std::ostream& Substitution::print(PrintOptions const& opt,
 
 std::unique_ptr<Substitution> Substitution::parse(State& s)
 {
+  assert(s.symbol.size() >= 2);
   assert(s.nextChar() == 'S');
   s.advance(1);
   auto ret = std::make_unique<Substitution>();
+
+  if (std::isdigit(s.nextChar()) || std::isupper(s.nextChar()))
+  {
+    auto const oldsymbol = s.symbol;
+    auto seqid = SeqId::parse(s);
+    if (seqid >= s.user_substitutions.size())
+      throw std::runtime_error("Invalid substitution index (got " +
+                               std::to_string(s.user_substitutions.size()) +
+                               " so far): " + s.toString());
+    ret->addNode(
+        std::make_unique<UserSubstitution>(s.user_substitutions[seqid]));
+    if (s.nextChar() != '_')
+    {
+      // Restore old symbol state for displaying.
+      s.symbol = oldsymbol;
+      throw std::runtime_error("Substitution does not end with '_': " +
+                               s.toString());
+    }
+    s.advance(1);
+    return ret;
+  }
+  if (s.nextChar() == '_')
+  {
+    if (s.user_substitutions.empty())
+      throw std::runtime_error("Invalid substitution index (got " +
+                               std::to_string(s.user_substitutions.size()) +
+                               " so far): " + s.toString());
+    ret->addNode(std::make_unique<UserSubstitution>(s.user_substitutions[0]));
+    s.advance(1);
+    return ret;
+  }
+
   auto const it = builtin_substitutions.find(s.nextChar());
   if (it != builtin_substitutions.end())
   {

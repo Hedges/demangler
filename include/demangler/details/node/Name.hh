@@ -28,9 +28,6 @@ public:
                       std::ostream& out) const override final;
 
   static std::unique_ptr<Name> parse(State &s);
-
-private:
-  string_type name;
 };
 }
 }

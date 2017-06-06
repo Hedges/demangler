@@ -31,6 +31,7 @@ public:
     Type,
     UnqualifiedName,
     UnscopedName,
+    UserSubstitution,
   };
 
   explicit Node(Type t) noexcept;
