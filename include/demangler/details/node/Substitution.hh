@@ -26,8 +26,12 @@ public:
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  Node const* getSubstitutedNode() const noexcept;
 
   static std::unique_ptr<Substitution> parse(State& s);
+
+private:
+  Node const* node;
 };
 }
 }

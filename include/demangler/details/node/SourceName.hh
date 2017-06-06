@@ -17,6 +17,7 @@ class SourceName : public Node
 {
 public:
   SourceName() noexcept;
+  explicit SourceName(string_type pname) noexcept;
   SourceName(SourceName const& b) = default;
   SourceName(SourceName&& b) noexcept = default;
   ~SourceName() noexcept = default;

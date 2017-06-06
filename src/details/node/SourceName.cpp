@@ -15,6 +15,11 @@ SourceName::SourceName() noexcept : Node{Type::SourceName}
 {
 }
 
+SourceName::SourceName(string_type pname) noexcept
+  : Node{Type::SourceName}, name{pname}
+{
+}
+
 std::ostream& SourceName::print(PrintOptions const&, std::ostream& out) const
 {
   printStringSpan(out, this->name);
