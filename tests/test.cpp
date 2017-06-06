@@ -355,7 +355,7 @@ TEST_CASE("Preset substitution")
       "_Z3fooSs",
       "foo(std::basic_string<char, std::char_traits<char>, std::allocator<char>>)",
       "foo",
-      "foo(std::basic_string<char, std::char_traits<char>, std::allocator<char>>)",
+      "foo(std::basic_string)",
       "foo"
     };
     // clang-format on
@@ -369,7 +369,7 @@ TEST_CASE("Preset substitution")
       "_Z3fooSaSbSsSiSoSd",
       "foo(std::allocator, std::basic_string, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::basic_istream<char, std::char_traits<char>>, std::basic_ostream<char, std::char_traits<char>>, std::basic_iostream<char, std::char_traits<char>>)",
       "foo",
-      "foo(std::allocator, std::basic_string, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::basic_istream<char, std::char_traits<char>>, std::basic_ostream<char, std::char_traits<char>>, std::basic_iostream<char, std::char_traits<char>>)",
+      "foo(std::allocator, std::basic_string, std::basic_string, std::basic_istream, std::basic_ostream, std::basic_iostream)",
       "foo"
     };
     // clang-format on
