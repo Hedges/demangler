@@ -32,7 +32,7 @@ public:
     return symbol.size() > 2 && symbol[0] == '_' && symbol[1] == 'Z';
   }
 
-  static std::unique_ptr<MangledName> parse(State &s);
+  static std::unique_ptr<MangledName> parse(State& s);
 };
 }
 }

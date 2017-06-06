@@ -17,7 +17,8 @@ BuiltinSubstitution::BuiltinSubstitution(gsl::cstring_span<> subst) noexcept
 {
 }
 
-std::ostream& BuiltinSubstitution::print(PrintOptions const&, std::ostream& out) const
+std::ostream& BuiltinSubstitution::print(PrintOptions const&,
+                                         std::ostream& out) const
 {
   printStringSpan(out, this->substitution);
   return out;

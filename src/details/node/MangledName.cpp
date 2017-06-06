@@ -19,7 +19,7 @@ std::ostream& MangledName::print(PrintOptions const& opt,
   return out;
 }
 
-std::unique_ptr<MangledName> MangledName::parse(State &s)
+std::unique_ptr<MangledName> MangledName::parse(State& s)
 {
   if (!isMangled(s.symbol))
     throw std::runtime_error("Expected mangled-name: " + s.toString());

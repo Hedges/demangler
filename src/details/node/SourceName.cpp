@@ -21,7 +21,7 @@ std::ostream& SourceName::print(PrintOptions const&, std::ostream& out) const
   return out;
 }
 
-std::unique_ptr<SourceName> SourceName::parse(State &s)
+std::unique_ptr<SourceName> SourceName::parse(State& s)
 {
   if (!std::isdigit(s.symbol[0]))
     throw std::runtime_error("Expected number for source-name: " +

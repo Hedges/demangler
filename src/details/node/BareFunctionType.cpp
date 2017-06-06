@@ -5,8 +5,8 @@
 #include <cassert>
 #include <stdexcept>
 
-#include <demangler/details/node/Type.hh>
 #include <demangler/details/node/BuiltinType.hh>
+#include <demangler/details/node/Type.hh>
 
 namespace demangler
 {
@@ -18,7 +18,8 @@ BareFunctionType::BareFunctionType() noexcept : Node{Type::BareFunctionType}
 {
 }
 
-std::ostream& BareFunctionType::print(PrintOptions const& opt, std::ostream& out) const
+std::ostream& BareFunctionType::print(PrintOptions const& opt,
+                                      std::ostream& out) const
 {
   assert(this->getNodeCount() != 0);
   if (!opt.add_parameters)
@@ -37,7 +38,7 @@ std::ostream& BareFunctionType::print(PrintOptions const& opt, std::ostream& out
   return out;
 }
 
-std::unique_ptr<BareFunctionType> BareFunctionType::parse(State &s)
+std::unique_ptr<BareFunctionType> BareFunctionType::parse(State& s)
 {
   auto ret = std::make_unique<BareFunctionType>();
   while (!s.empty())

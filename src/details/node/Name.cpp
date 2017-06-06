@@ -27,7 +27,7 @@ std::ostream& Name::print(PrintOptions const& opt, std::ostream& out) const
   return out;
 }
 
-std::unique_ptr<Name> Name::parse(State &s)
+std::unique_ptr<Name> Name::parse(State& s)
 {
   auto ret = std::make_unique<Name>();
 

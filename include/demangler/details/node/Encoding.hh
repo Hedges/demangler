@@ -27,7 +27,7 @@ public:
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
 
-  static std::unique_ptr<Encoding> parse(State &s);
+  static std::unique_ptr<Encoding> parse(State& s);
 };
 }
 }

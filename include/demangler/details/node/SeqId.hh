@@ -24,8 +24,7 @@ public:
   SeqId& operator=(SeqId const& rhs) noexcept = default;
   SeqId& operator=(SeqId&& rhs) noexcept = default;
 
-  static unsigned int parse(State &s);
-
+  static unsigned int parse(State& s);
 };
 }
 }

@@ -284,7 +284,7 @@ constexpr auto const ext_demangle_nsamples =
   auto const& want_minimal = test.want_minimal;                     \
                                                                     \
   CHECK(want == demangler::demangle(input));                        \
-  // CHECK(want_no_params ==                                           \
+// CHECK(want_no_params ==                                           \
   //       demangler::demangle(input, demangler::NoParamTag{}));       \
   // CHECK(want_no_template_param ==                                   \
   //       demangler::demangle(input, demangler::NoTemplateParamTag{}));

@@ -13,13 +13,12 @@ namespace details
 {
 namespace node
 {
-TemplateArg::TemplateArg() noexcept
-  : Node{Type::TemplateArg}
+TemplateArg::TemplateArg() noexcept : Node{Type::TemplateArg}
 {
 }
 
 std::ostream& TemplateArg::print(PrintOptions const& opt,
-                                          std::ostream& out) const
+                                 std::ostream& out) const
 {
   assert(this->getNodeCount() == 1);
   this->getNode(0)->print(opt, out);

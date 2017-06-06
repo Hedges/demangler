@@ -93,7 +93,6 @@ std::unique_ptr<Type> Type::parse(State& s)
     s.user_substitutions.emplace_back(name.get());
     ret->addNode(std::move(name));
     return ret;
-
   }
   throw std::runtime_error("Unknown type: " + s.toString());
 }

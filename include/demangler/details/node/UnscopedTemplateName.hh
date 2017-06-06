@@ -22,12 +22,13 @@ public:
   ~UnscopedTemplateName() noexcept = default;
 
   UnscopedTemplateName& operator=(UnscopedTemplateName const& rhs) = default;
-  UnscopedTemplateName& operator=(UnscopedTemplateName&& rhs) noexcept = default;
+  UnscopedTemplateName& operator=(UnscopedTemplateName&& rhs) noexcept =
+      default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
 
-  static std::unique_ptr<UnscopedTemplateName> parse(State &s);
+  static std::unique_ptr<UnscopedTemplateName> parse(State& s);
 };
 }
 }

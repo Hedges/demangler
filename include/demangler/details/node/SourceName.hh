@@ -27,7 +27,7 @@ public:
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
 
-  static std::unique_ptr<SourceName> parse(State &s);
+  static std::unique_ptr<SourceName> parse(State& s);
 
 private:
   string_type name;

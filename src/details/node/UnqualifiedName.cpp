@@ -17,14 +17,15 @@ UnqualifiedName::UnqualifiedName() noexcept : Node{Type::UnqualifiedName}
 {
 }
 
-std::ostream& UnqualifiedName::print(PrintOptions const& opt, std::ostream& out) const
+std::ostream& UnqualifiedName::print(PrintOptions const& opt,
+                                     std::ostream& out) const
 {
   assert(this->getNodeCount() == 1);
   this->getNode(0)->print(opt, out);
   return out;
 }
 
-std::unique_ptr<UnqualifiedName> UnqualifiedName::parse(State &s)
+std::unique_ptr<UnqualifiedName> UnqualifiedName::parse(State& s)
 {
   auto ret = std::make_unique<UnqualifiedName>();
   if (std::isdigit(s.symbol[0]))
