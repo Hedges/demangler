@@ -23,13 +23,17 @@ set(SRCS
   src/demangler.cpp
   src/details/Demangler.cpp
   src/details/node/BareFunctionType.cpp
+  src/details/node/BuiltinSubstitution.cpp
   src/details/node/BuiltinType.cpp
   src/details/Node.cpp
   src/details/node/Encoding.cpp
   src/details/node/MangledName.cpp
   src/details/node/Name.cpp
   src/details/node/SourceName.cpp
+  src/details/node/Substitution.cpp
   src/details/node/Type.cpp
+  src/details/node/UnqualifiedName.cpp
+  src/details/node/UnscopedName.cpp
   src/details/Parser.cpp
 )
 

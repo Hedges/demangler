@@ -21,12 +21,16 @@ public:
   enum class Type
   {
     BareFunctionType,
+    BuiltinSubstitution,
     BuiltinType,
     Encoding,
     MangledName,
     Name,
     SourceName,
+    Substitution,
     Type,
+    UnqualifiedName,
+    UnscopedName,
   };
 
   explicit Node(Type t) noexcept;

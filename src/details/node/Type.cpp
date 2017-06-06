@@ -6,6 +6,7 @@
 
 #include <demangler/details/node/BuiltinType.hh>
 #include <demangler/details/node/SourceName.hh>
+#include <demangler/details/node/Substitution.hh>
 
 namespace demangler
 {
@@ -56,10 +57,11 @@ std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
 
 std::unique_ptr<Type> Type::parse(State& s)
 {
+  auto ret = std::make_unique<Type>();
+
   auto it = builtin_types_map.find(s.nextChar());
   if (it != builtin_types_map.end())
   {
-    auto ret = std::make_unique<Type>();
     ret->addNode(std::make_unique<BuiltinType>(it->second));
     s.advance(1);
     return ret;
@@ -71,10 +73,18 @@ std::unique_ptr<Type> Type::parse(State& s)
   }
   else if (s.nextChar() == 'u')
   {
-    auto ret = std::make_unique<Type>();
     s.advance(1);
     ret->addNode(SourceName::parse(s));
     return ret;
+  }
+  else if (s.nextChar() == 'S' && s.symbol.size() >= 2)
+  {
+    // That would mean std:: and is handled in UnscopedName
+    if (s.symbol[1] != 't')
+    {
+      ret->addNode(Substitution::parse(s));
+      return ret;
+    }
   }
   throw std::runtime_error("Unknown type: " + s.toString());
 }
