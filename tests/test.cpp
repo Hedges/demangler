@@ -462,16 +462,32 @@ TEST_CASE("Namespace")
 
 TEST_CASE("Constructor")
 {
-  // clang-format off
-  auto const data = TestData{
-    "_ZN3fooC1Ev",
-    "foo::foo()",
-    "foo::foo",
-    "foo::foo()",
-    "foo::foo"
-  };
-  // clang-format on
-  CHECK_TEST(data);
+  SECTION("Straightforward")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_ZN3fooC1Ev",
+      "foo::foo()",
+      "foo::foo",
+      "foo::foo()",
+      "foo::foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("Needs looking for last name")
+  {
+    auto const data = TestData
+    {
+      "_ZNSaIcEC1ES_",
+      "std::allocator<char>::allocator(std::allocator<char>)",
+      "std::allocator<char>::allocator",
+      "std::allocator::allocator(std::allocator)",
+      "std::allocator::allocator",
+    };
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")

@@ -146,11 +146,15 @@ std::ostream& Substitution::print(PrintOptions const& opt,
                                   std::ostream& out) const
 {
   assert(this->getNodeCount() == 1 || this->node);
-  if (this->node)
-    this->node->print(opt, out);
-  else
-    this->getNode(0)->print(opt, out);
+  this->getSubstitutedNode()->print(opt, out);
   return out;
+}
+
+Node const* Substitution::getSubstitutedNode() const noexcept
+{
+  if (this->node)
+    return this->node;
+  return this->getNode(0);
 }
 
 std::unique_ptr<Substitution> Substitution::parse(State& s)

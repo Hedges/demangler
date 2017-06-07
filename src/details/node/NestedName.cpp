@@ -7,6 +7,7 @@
 #include <demangler/details/Utils.hh>
 #include <demangler/details/node/Prefix.hh>
 #include <demangler/details/node/SourceName.hh>
+#include <demangler/details/node/Substitution.hh>
 
 namespace demangler
 {
@@ -53,23 +54,37 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
     s.symbol = oldsymbol;
     throw std::runtime_error("Unfinished nested name: " + s.toString());
   }
+  s.user_substitutions.emplace_back(ret.get());
   s.advance(1);
   return ret;
 }
 
 NestedName::string_type NestedName::getLastName(Node const* lastnode)
 {
-  if (lastnode->getType() == Type::Prefix)
+  switch (lastnode->getType())
   {
-    auto const* node = lastnode->getNode(0);
-    if (node->getType() == Type::UnqualifiedName)
+  case Type::Prefix:
+  case Type::UnqualifiedName:
+    return getLastName(lastnode->getNode(0));
+  case Type::Substitution:
+    return getLastName(
+        static_cast<Substitution const*>(lastnode)->getSubstitutedNode());
+  case Type::SourceName:
+    return static_cast<SourceName const*>(lastnode)->getName();
+  case Type::NestedName:
+  {
+    for (auto i = lastnode->getNodeCount(); i > 0; --i)
     {
-      node = node->getNode(0);
-      if (node->getType() == Type::SourceName)
-        return static_cast<SourceName const*>(node)->getName();
+      auto const* node = lastnode->getNode(i - 1);
+      if (node->getType() == Type::TemplateArgs)
+        continue;
+      else
+        return getLastName(node);
     }
+  default:
+    return {};
   }
-  return {};
+  }
 }
 }
 }

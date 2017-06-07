@@ -34,6 +34,9 @@ std::unique_ptr<Name> Name::parse(State& s)
 
   if (s.nextChar() == 'N')
     ret->addNode(NestedName::parse(s));
+  else if (s.symbol[0] == 'S' && s.symbol[1] != 't')
+  {
+  }
   else
     ret->addNode(UnqualifiedName::parse(s));
   if (!s.empty() && s.nextChar() == 'I')
