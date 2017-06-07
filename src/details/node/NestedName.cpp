@@ -22,13 +22,10 @@ NestedName::NestedName() noexcept : Node{Type::NestedName}
 std::ostream& NestedName::print(PrintOptions const& opt,
                                 std::ostream& out) const
 {
-  assert(this->getNodeCount() > 0);
-  for (auto i = 0u; i < this->getNodeCount(); ++i)
-  {
-    if (i)
-      out << "::";
-    this->getNode(i)->print(opt, out);
-  }
+  assert(this->getNodeCount() == 2);
+  this->getNode(0)->print(opt, out);
+  out << "::";
+  this->getNode(1)->print(opt, out);
   return out;
 }
 
@@ -38,15 +35,15 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   auto const oldsymbol = s.symbol;
   s.advance(1);
   auto ret = std::make_unique<NestedName>();
-  Node const* lastnode = nullptr;
+  auto lastnode = std::unique_ptr<Node>{nullptr};
+  auto prefixnode = std::make_unique<Prefix>();
 
+  lastnode = Prefix::parse(s);
   while (!s.empty() && s.nextChar() != 'E')
   {
-    if (lastnode)
-      ret->addNode(Prefix::parse(s, getLastName(lastnode)));
-    else
-      ret->addNode(Prefix::parse(s));
-    lastnode = ret->getNode(ret->getNodeCount() - 1);
+    auto lastname = getLastName(lastnode.get());
+    prefixnode->addNode(std::move(lastnode));
+    lastnode = Prefix::parse(s, lastname);
   }
   if (s.empty())
   {
@@ -54,7 +51,9 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
     s.symbol = oldsymbol;
     throw std::runtime_error("Unfinished nested name: " + s.toString());
   }
-  s.user_substitutions.emplace_back(ret.get());
+  s.user_substitutions.emplace_back(prefixnode.get());
+  ret->addNode(std::move(prefixnode));
+  ret->addNode(std::move(lastnode));
   s.advance(1);
   return ret;
 }

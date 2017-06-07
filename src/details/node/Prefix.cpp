@@ -23,7 +23,12 @@ std::ostream& Prefix::print(PrintOptions const& opt, std::ostream& out) const
 {
   assert(this->getNodeCount() > 0);
   for (auto i = 0u; i < this->getNodeCount(); ++i)
-    this->getNode(i)->print(opt, out);
+  {
+    auto const* node = this->getNode(i);
+    if (i && node->getType() != Type::TemplateArgs)
+      out << "::";
+    node->print(opt, out);
+  }
   return out;
 }
 
