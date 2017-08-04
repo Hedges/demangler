@@ -506,6 +506,23 @@ TEST_CASE("Pointers")
   }
 }
 
+TEST_CASE("References")
+{
+  SECTION("Simple reference")
+  {
+    auto const data =
+        TestData{"_Z3fooRi", "foo(int&)", "foo", "foo(int&)", "foo"};
+    CHECK_TEST(data);
+  }
+
+  SECTION("Reference to pointer")
+  {
+    auto const data =
+        TestData{"_Z3fooRPi", "foo(int*&)", "foo", "foo(int*&)", "foo"};
+    CHECK_TEST(data);
+  }
+}
+
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")
 {
   for (auto i = 0u; i < ext_demangle_nsamples; ++i)

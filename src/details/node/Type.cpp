@@ -44,7 +44,8 @@ auto const builtin_D_type = std::unordered_map<char, std::string>{
 };
 }
 
-Type::Type() noexcept : Node{Node::Type::Type}, is_pointer{false}
+Type::Type() noexcept
+  : Node{Node::Type::Type}, is_pointer{false}, is_reference{false}
 {
 }
 
@@ -55,6 +56,8 @@ std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
     this->getNode(i)->print(opt, out);
   if (this->is_pointer)
     out << '*';
+  if (this->is_reference)
+    out << '&';
   return out;
 }
 
@@ -99,6 +102,13 @@ std::unique_ptr<Type> Type::parse(State& s)
   else if (s.nextChar() == 'P')
   {
     ret->is_pointer = true;
+    s.advance(1);
+    ret->addNode(Type::parse(s));
+    return ret;
+  }
+  else if (s.nextChar() == 'R')
+  {
+    ret->is_reference = true;
     s.advance(1);
     ret->addNode(Type::parse(s));
     return ret;
