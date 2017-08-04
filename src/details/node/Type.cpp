@@ -44,7 +44,7 @@ auto const builtin_D_type = std::unordered_map<char, std::string>{
 };
 }
 
-Type::Type() noexcept : Node{Node::Type::Type}
+Type::Type() noexcept : Node{Node::Type::Type}, is_pointer{false}
 {
 }
 
@@ -53,6 +53,8 @@ std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
   assert(this->getNodeCount() != 0);
   for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
     this->getNode(i)->print(opt, out);
+  if (this->is_pointer)
+    out << '*';
   return out;
 }
 
@@ -92,6 +94,13 @@ std::unique_ptr<Type> Type::parse(State& s)
     auto name = Name::parse(s);
     s.user_substitutions.emplace_back(name.get());
     ret->addNode(std::move(name));
+    return ret;
+  }
+  else if (s.nextChar() == 'P')
+  {
+    ret->is_pointer = true;
+    s.advance(1);
+    ret->addNode(Type::parse(s));
     return ret;
   }
   throw std::runtime_error("Unknown type: " + s.toString());

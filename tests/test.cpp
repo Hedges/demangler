@@ -478,14 +478,30 @@ TEST_CASE("Constructor")
 
   SECTION("Needs looking for last name")
   {
-    auto const data = TestData
-    {
-      "_ZNSaIcEC1ES_",
-      "std::allocator<char>::allocator(std::allocator<char>)",
-      "std::allocator<char>::allocator",
-      "std::allocator::allocator(std::allocator)",
-      "std::allocator::allocator",
+    auto const data = TestData{
+        "_ZNSaIcEC1ES_",
+        "std::allocator<char>::allocator(std::allocator<char>)",
+        "std::allocator<char>::allocator",
+        "std::allocator::allocator(std::allocator)",
+        "std::allocator::allocator",
     };
+    CHECK_TEST(data);
+  }
+}
+
+TEST_CASE("Pointers")
+{
+  SECTION("One pointer")
+  {
+    auto const data =
+        TestData{"_Z3fooPi", "foo(int*)", "foo", "foo(int*)", "foo"};
+    CHECK_TEST(data);
+  }
+
+  SECTION("Pointer to pointer")
+  {
+    auto const data =
+        TestData{"_Z3fooPPPi", "foo(int***)", "foo", "foo(int***)", "foo"};
     CHECK_TEST(data);
   }
 }

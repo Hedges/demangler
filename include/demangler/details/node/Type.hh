@@ -31,6 +31,8 @@ public:
 
 private:
   static std::unique_ptr<Type> parseD(State& s);
+
+  bool is_pointer;
 };
 }
 }
