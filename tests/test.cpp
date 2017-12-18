@@ -28,8 +28,8 @@ static TestData const ext_demangle_samples[] = {
   },
   {
     "_ZN9__gnu_cxx13stdio_filebufIcSt11char_traitsIcEEC1EP8_IO_FILESt13_Ios_Openmodem",
-    "__gnu_cxx::stdio_filebuf<char, std::char_traits<char> >::stdio_filebuf(_IO_FILE*, std::_Ios_Openmode, unsigned long)",
-    "__gnu_cxx::stdio_filebuf<char, std::char_traits<char> >::stdio_filebuf",
+    "__gnu_cxx::stdio_filebuf<char, std::char_traits<char>>::stdio_filebuf(_IO_FILE*, std::_Ios_Openmode, unsigned long)",
+    "__gnu_cxx::stdio_filebuf<char, std::char_traits<char>>::stdio_filebuf",
     "__gnu_cxx::stdio_filebuf::stdio_filebuf(_IO_FILE*, std::_Ios_Openmode, unsigned long)",
     "__gnu_cxx::stdio_filebuf::stdio_filebuf",
   },
@@ -579,7 +579,7 @@ TEST_CASE("Positive tests", "[.][Ext-Demangle]")
     }
     catch(...)
     {
-      std::cerr << "Failed to parse: " << input << std::endl;
+      std::cerr << "Failed to parse #" << i << ": " << input << std::endl;
       throw;
     }
   }

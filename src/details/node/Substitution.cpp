@@ -164,6 +164,8 @@ std::unique_ptr<Substitution> Substitution::parse(State& s)
   s.advance(1);
   auto ret = std::make_unique<Substitution>();
 
+  if (s.empty())
+    throw std::runtime_error("Empty substitution");
   if (std::isdigit(s.nextChar()) || std::isupper(s.nextChar()))
   {
     auto const oldsymbol = s.symbol;

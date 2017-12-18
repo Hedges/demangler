@@ -7,7 +7,6 @@
 #include <demangler/details/node/BuiltinType.hh>
 #include <demangler/details/node/Name.hh>
 #include <demangler/details/node/SourceName.hh>
-#include <demangler/details/node/Substitution.hh>
 
 namespace demangler
 {
@@ -103,14 +102,10 @@ std::unique_ptr<Type> Type::parse(State& s)
     ret->addNode(SourceName::parse(s));
     return ret;
   }
-  else if (s.nextChar() == 'S' && s.symbol.size() >= 2)
+  else if (s.nextChar() == 'S')
   {
-    // That would mean std:: and is handled in UnscopedName
-    if (s.symbol[1] != 't')
-    {
-      ret->addNode(Substitution::parse(s));
+      ret->addNode(Name::parse(s));
       return ret;
-    }
   }
   else if (std::isdigit(s.nextChar()))
   {

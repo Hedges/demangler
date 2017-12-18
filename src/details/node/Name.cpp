@@ -6,6 +6,7 @@
 
 #include <demangler/details/Utils.hh>
 #include <demangler/details/node/NestedName.hh>
+#include <demangler/details/node/Substitution.hh>
 #include <demangler/details/node/TemplateArgs.hh>
 #include <demangler/details/node/UnqualifiedName.hh>
 #include <demangler/details/node/UnscopedName.hh>
@@ -34,6 +35,15 @@ std::unique_ptr<Name> Name::parse(State& s)
 
   if (s.nextChar() == 'N')
     ret->addNode(NestedName::parse(s));
+  else if (s.nextChar() == 'S')
+  {
+    if (s.charsRemaining() == 1)
+      throw std::runtime_error("Empty substitution");
+    if (s.peekChar(1) == 't')
+      ret->addNode(UnscopedName::parse(s));
+    else
+      ret->addNode(Substitution::parse(s));
+  }
   else
     ret->addNode(UnqualifiedName::parse(s));
   if (!s.empty() && s.nextChar() == 'I')

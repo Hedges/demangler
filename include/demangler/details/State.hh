@@ -29,6 +29,14 @@ struct State
   {
     return this->symbol[0];
   }
+  gsl::cstring_span<>::index_type charsRemaining() const noexcept
+  {
+    return this->symbol.size();
+  }
+  char peekChar(unsigned int idx) const noexcept
+  {
+    return this->symbol[idx];
+  }
 
   gsl::cstring_span<> symbol;
   Node* parent;
