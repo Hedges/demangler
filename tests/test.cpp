@@ -1,5 +1,7 @@
 #include "catch.hpp"
 
+#include <iostream>
+
 #include <demangler/demangler.hh>
 
 namespace
@@ -551,11 +553,34 @@ TEST_CASE("Positive tests", "[.][Ext-Demangle]")
         ext_demangle_samples[i].want_no_template_param;
     auto const& want_minimal = ext_demangle_samples[i].want_minimal;
 
-    CHECK(want == demangler::demangle(input));
-    CHECK(want_no_params ==
-          demangler::demangle(input, demangler::NoParamTag{}));
-    CHECK(want_no_template_param ==
-          demangler::demangle(input, demangler::NoTemplateParamTag{}));
-    CHECK(want_minimal == demangler::demangle(input, demangler::MinimalTag{}));
+    try
+    {
+      auto const demangled = demangler::demangle(input);
+      auto const demangled_no_params =
+          demangler::demangle(input, demangler::NoParamTag{});
+      auto const demangled_no_template_params =
+          demangler::demangle(input, demangler::NoTemplateParamTag{});
+      auto const demangled_minimal =
+          demangler::demangle(input, demangler::MinimalTag{});
+
+      CHECK(want == demangled);
+      CHECK(want_no_params == demangled_no_params);
+      CHECK(want_no_template_param == demangled_no_template_params);
+      CHECK(want_minimal == demangled_minimal);
+      auto const ok =
+          (want == demangled) && (want_no_params == demangled_no_params) &&
+          (want_no_template_param == demangled_no_template_params) &&
+          (want_minimal == demangled_minimal);
+      if (!ok)
+      {
+        std::cerr << "Failed to parse: " << input << std::endl;
+        REQUIRE(false);
+    }
+    }
+    catch(...)
+    {
+      std::cerr << "Failed to parse: " << input << std::endl;
+      throw;
+    }
   }
 }
