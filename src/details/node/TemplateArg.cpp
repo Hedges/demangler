@@ -33,9 +33,12 @@ std::unique_ptr<TemplateArg> TemplateArg::parse(State& s)
     throw std::runtime_error("Expression unsupported in templates");
   else if (s.nextChar() == 'J')
     throw std::runtime_error("Argument pack unsupported in templates");
-  else if (s.nextChar() == 'J')
+  else if (s.nextChar() == 'X')
+    throw std::runtime_error("Expression unsupported in templates");
+  else if (s.nextChar() == 'L')
     throw std::runtime_error("Expr primary unsupported in templates");
-  ret->addNode(node::Type::parse(s));
+  else
+    ret->addNode(node::Type::parse(s));
   return ret;
 }
 }
