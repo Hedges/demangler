@@ -2,6 +2,7 @@
 #define DEMANGLER_DETAILS_NODE_TYPE_HH_
 
 #include <memory>
+#include <string>
 
 #include <gsl/string_span>
 
@@ -32,8 +33,7 @@ public:
 private:
   static std::unique_ptr<Type> parseD(State& s);
 
-  bool is_pointer;
-  bool is_reference;
+  std::string cv_qualifiers;
 };
 }
 }

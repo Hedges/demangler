@@ -42,10 +42,19 @@ auto const builtin_D_type = std::unordered_map<char, std::string>{
     {'n', "decltype(nullptr)"},
     {'s', "char16_t"},
 };
+
+auto const cv_qualifiers_map = std::unordered_map<char, std::string>{
+    {'K', " const"},
+    {'O', "&&"},
+    {'P', "*"},
+    {'R', "&"},
+    {'V', " volatile"},
+    {'r', " restrict"},
+};
 }
 
 Type::Type() noexcept
-  : Node{Node::Type::Type}, is_pointer{false}, is_reference{false}
+  : Node{Node::Type::Type}
 {
 }
 
@@ -54,10 +63,16 @@ std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
   assert(this->getNodeCount() != 0);
   for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
     this->getNode(i)->print(opt, out);
-  if (this->is_pointer)
-    out << '*';
-  if (this->is_reference)
-    out << '&';
+  for (auto rit = this->cv_qualifiers.rbegin();
+       rit != this->cv_qualifiers.rend();
+       ++rit)
+  {
+    auto const qual = *rit;
+    auto const qualit = cv_qualifiers_map.find(qual);
+    if (qualit == cv_qualifiers_map.end())
+      throw std::logic_error(std::string("Invalid cv-qualifier: ") + qual);
+    out << qualit->second;
+  }
   return out;
 }
 
@@ -65,6 +80,11 @@ std::unique_ptr<Type> Type::parse(State& s)
 {
   auto ret = std::make_unique<Type>();
 
+  while (cv_qualifiers_map.find(s.nextChar()) != cv_qualifiers_map.end())
+  {
+    ret->cv_qualifiers += s.nextChar();
+    s.advance(1);
+  }
   auto it = builtin_types_map.find(s.nextChar());
   if (it != builtin_types_map.end())
   {
@@ -97,20 +117,6 @@ std::unique_ptr<Type> Type::parse(State& s)
     auto name = Name::parse(s);
     s.user_substitutions.emplace_back(name.get());
     ret->addNode(std::move(name));
-    return ret;
-  }
-  else if (s.nextChar() == 'P')
-  {
-    ret->is_pointer = true;
-    s.advance(1);
-    ret->addNode(Type::parse(s));
-    return ret;
-  }
-  else if (s.nextChar() == 'R')
-  {
-    ret->is_reference = true;
-    s.advance(1);
-    ret->addNode(Type::parse(s));
     return ret;
   }
   throw std::runtime_error("Unknown type: " + s.toString());
