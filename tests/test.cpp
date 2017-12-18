@@ -320,16 +320,33 @@ TEST_CASE("Multiple arguments")
 
 TEST_CASE("Builtin single-char types")
 {
-  // clang-format off
-  auto const data = TestData{
-    "_Z3foowbcahstijlmxynofdegz",
-    "foo(wchar_t, bool, char, signed char, unsigned char, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, __int128, unsigned __int128, float, double, long double, __float128, ...)",
-    "foo",
-    "foo(wchar_t, bool, char, signed char, unsigned char, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, __int128, unsigned __int128, float, double, long double, __float128, ...)",
-    "foo"
-  };
-  // clang-format on
-  CHECK_TEST(data);
+  SECTION("Everything")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3foowbcahstijlmxynofdegz",
+      "foo(wchar_t, bool, char, signed char, unsigned char, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, __int128, unsigned __int128, float, double, long double, __float128, ...)",
+      "foo",
+      "foo(wchar_t, bool, char, signed char, unsigned char, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, __int128, unsigned __int128, float, double, long double, __float128, ...)",
+      "foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("Hello")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z1hello",
+      "h(long double, long, long, unsigned __int128)",
+      "h",
+      "h(long double, long, long, unsigned __int128)",
+      "h"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("Builtin multi-char types")
