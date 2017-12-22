@@ -542,6 +542,19 @@ TEST_CASE("References")
   }
 }
 
+TEST_CASE("Operators")
+{
+  SECTION("operator new")
+  {
+    auto const data = TestData{"_ZN1CnwEm",
+                               "C::operator new(unsigned long)",
+                               "C::operator new",
+                               "C::operator new(unsigned long)",
+                               "C::operator new"};
+    CHECK_TEST(data);
+  }
+}
+
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")
 {
   for (auto i = 0u; i < ext_demangle_nsamples; ++i)

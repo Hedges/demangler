@@ -6,6 +6,7 @@
 
 #include <demangler/details/Utils.hh>
 #include <demangler/details/node/Constructor.hh>
+#include <demangler/details/node/OperatorName.hh>
 #include <demangler/details/node/SourceName.hh>
 
 namespace demangler
@@ -45,6 +46,15 @@ std::unique_ptr<UnqualifiedName> UnqualifiedName::parse(State& s,
     ret->addNode(std::make_unique<Constructor>(ctorname));
     s.advance(1);
     return ret;
+  }
+  else
+  {
+    auto operatorname = OperatorName::parse(s);
+    if (operatorname)
+    {
+      ret->addNode(std::move(operatorname));
+      return ret;
+    }
   }
   throw std::runtime_error("Unknown unqualified-name: " + s.toString());
 }
