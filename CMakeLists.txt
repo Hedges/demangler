@@ -37,6 +37,7 @@ set(SRCS
   src/details/node/Substitution.cpp
   src/details/node/TemplateArg.cpp
   src/details/node/TemplateArgs.cpp
+  src/details/node/TemplateParam.cpp
   src/details/node/Type.cpp
   src/details/node/UnqualifiedName.cpp
   src/details/node/UnscopedName.cpp

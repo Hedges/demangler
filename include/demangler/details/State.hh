@@ -41,6 +41,14 @@ struct State
   gsl::cstring_span<> symbol;
   Node* parent;
   std::vector<Node*> user_substitutions;
+
+  // If a cast operator is templated, the return type (which is the name of the
+  // operator and thus included in the signature) might reference template
+  // arguments. At the time of demangling, the template substitutions are not
+  // yet known. This boolean should be set to true in such event where
+  // substition will be resolved later.
+  bool awaiting_template;
+  std::vector<Node*> template_substitutions;
 };
 }
 }

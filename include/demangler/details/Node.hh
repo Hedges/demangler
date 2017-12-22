@@ -34,6 +34,7 @@ public:
     Substitution,
     TemplateArg,
     TemplateArgs,
+    TemplateParam,
     Type,
     UnqualifiedName,
     UnscopedName,

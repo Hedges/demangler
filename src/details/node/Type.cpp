@@ -7,6 +7,7 @@
 #include <demangler/details/node/BuiltinType.hh>
 #include <demangler/details/node/Name.hh>
 #include <demangler/details/node/SourceName.hh>
+#include <demangler/details/node/TemplateParam.hh>
 
 namespace demangler
 {
@@ -106,6 +107,11 @@ std::unique_ptr<Type> Type::parse(State& s)
   {
       ret->addNode(Name::parse(s));
       return ret;
+  }
+  else if (s.nextChar() == 'T')
+  {
+    ret->addNode(TemplateParam::parse(s));
+    return ret;
   }
   else if (std::isdigit(s.nextChar()))
   {
