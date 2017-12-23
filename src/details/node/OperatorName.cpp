@@ -45,6 +45,11 @@ OperatorName::OperatorName() noexcept
 {
 }
 
+OperatorName::OperatorName(clone_tag, OperatorName const& b)
+  : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& OperatorName::print(PrintOptions const& opt,
                                   std::ostream& out) const
 {
@@ -53,6 +58,11 @@ std::ostream& OperatorName::print(PrintOptions const& opt,
   for (auto i = 0u; i < this->getNodeCount(); ++i)
     this->getNode(i)->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> OperatorName::deepClone() const
+{
+  return std::make_unique<OperatorName>(clone_tag{}, *this);
 }
 
 std::unique_ptr<OperatorName> OperatorName::parse(State& s)

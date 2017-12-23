@@ -18,6 +18,11 @@ BareFunctionType::BareFunctionType() noexcept : Node{Type::BareFunctionType}
 {
 }
 
+BareFunctionType::BareFunctionType(clone_tag, BareFunctionType const& b)
+  : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& BareFunctionType::print(PrintOptions const& opt,
                                       std::ostream& out) const
 {
@@ -36,6 +41,11 @@ std::ostream& BareFunctionType::print(PrintOptions const& opt,
   }
   out << ')';
   return out;
+}
+
+std::unique_ptr<Node> BareFunctionType::deepClone() const
+{
+  return std::make_unique<BareFunctionType>(clone_tag{}, *this);
 }
 
 std::unique_ptr<BareFunctionType> BareFunctionType::parse(State& s)

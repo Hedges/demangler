@@ -19,6 +19,10 @@ Prefix::Prefix() noexcept : Node{Type::Prefix}
 {
 }
 
+Prefix::Prefix(clone_tag, Prefix const& b) : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& Prefix::print(PrintOptions const& opt, std::ostream& out) const
 {
   assert(this->getNodeCount() > 0);
@@ -30,6 +34,11 @@ std::ostream& Prefix::print(PrintOptions const& opt, std::ostream& out) const
     node->print(opt, out);
   }
   return out;
+}
+
+std::unique_ptr<Node> Prefix::deepClone() const
+{
+  return std::make_unique<Prefix>(clone_tag{}, *this);
 }
 
 std::unique_ptr<Prefix> Prefix::parse(State& s, string_type ctorname)

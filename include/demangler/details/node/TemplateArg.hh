@@ -17,15 +17,17 @@ class TemplateArg : public Node
 {
 public:
   TemplateArg() noexcept;
-  TemplateArg(TemplateArg const& b) = default;
+  TemplateArg(clone_tag, TemplateArg const& b);
+  TemplateArg(TemplateArg const& b) noexcept = delete;
   TemplateArg(TemplateArg&& b) noexcept = default;
   ~TemplateArg() noexcept = default;
 
-  TemplateArg& operator=(TemplateArg const& rhs) = default;
+  TemplateArg& operator=(TemplateArg const& rhs) noexcept = delete;
   TemplateArg& operator=(TemplateArg&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<TemplateArg> parse(State& s);
 };

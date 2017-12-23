@@ -17,6 +17,11 @@ TemplateArgs::TemplateArgs() noexcept : Node{Type::TemplateArgs}
 {
 }
 
+TemplateArgs::TemplateArgs(clone_tag, TemplateArgs const& b)
+  : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& TemplateArgs::print(PrintOptions const& opt,
                                   std::ostream& out) const
 {
@@ -33,6 +38,11 @@ std::ostream& TemplateArgs::print(PrintOptions const& opt,
   }
   out << '>';
   return out;
+}
+
+std::unique_ptr<Node> TemplateArgs::deepClone() const
+{
+  return std::make_unique<TemplateArgs>(clone_tag{}, *this);
 }
 
 std::unique_ptr<TemplateArgs> TemplateArgs::parse(State& s)

@@ -17,6 +17,16 @@ Constructor::Constructor(string_type subst) noexcept
 {
 }
 
+Constructor::Constructor(clone_tag, Constructor const& b)
+  : Node{clone_tag{}, b}, substitution{b.substitution}
+{
+}
+
+std::unique_ptr<Node> Constructor::deepClone() const
+{
+  return std::make_unique<Constructor>(clone_tag{}, *this);
+}
+
 std::ostream& Constructor::print(PrintOptions const&, std::ostream& out) const
 {
   printStringSpan(out, this->substitution);

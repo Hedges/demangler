@@ -17,15 +17,17 @@ class UnscopedName : public Node
 {
 public:
   UnscopedName() noexcept;
-  UnscopedName(UnscopedName const& b) = default;
+  UnscopedName(clone_tag, UnscopedName const& b);
+  UnscopedName(UnscopedName const& b) noexcept = delete;
   UnscopedName(UnscopedName&& b) noexcept = default;
   ~UnscopedName() noexcept = default;
 
-  UnscopedName& operator=(UnscopedName const& rhs) = default;
+  UnscopedName& operator=(UnscopedName const& rhs) noexcept = delete;
   UnscopedName& operator=(UnscopedName&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<UnscopedName> parse(State& s);
 

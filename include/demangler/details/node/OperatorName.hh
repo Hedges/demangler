@@ -16,15 +16,17 @@ class OperatorName : public Node
 {
 public:
   OperatorName() noexcept;
-  OperatorName(OperatorName const& b) = default;
+  OperatorName(clone_tag, OperatorName const& b);
+  OperatorName(OperatorName const& b) noexcept = delete;
   OperatorName(OperatorName&& b) noexcept = default;
   ~OperatorName() noexcept = default;
 
-  OperatorName& operator=(OperatorName const& rhs) = default;
+  OperatorName& operator=(OperatorName const& rhs) noexcept = delete;
   OperatorName& operator=(OperatorName&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<OperatorName> parse(State& s);
 

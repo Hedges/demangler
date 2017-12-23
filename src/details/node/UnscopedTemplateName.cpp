@@ -19,12 +19,23 @@ UnscopedTemplateName::UnscopedTemplateName() noexcept
 {
 }
 
+UnscopedTemplateName::UnscopedTemplateName(clone_tag,
+                                           UnscopedTemplateName const& b)
+  : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& UnscopedTemplateName::print(PrintOptions const& opt,
                                           std::ostream& out) const
 {
   assert(this->getNodeCount() == 1);
   this->getNode(0)->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> UnscopedTemplateName::deepClone() const
+{
+  return std::make_unique<UnscopedTemplateName>(clone_tag{}, *this);
 }
 
 std::unique_ptr<UnscopedTemplateName> UnscopedTemplateName::parse(State& s)

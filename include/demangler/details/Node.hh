@@ -43,19 +43,27 @@ public:
   };
 
   explicit Node(Type t) noexcept;
-  Node(Node const& b) = default;
+  Node(Node const& b) noexcept = delete;
   Node(Node&& b) noexcept = default;
   ~Node() noexcept = default;
 
-  Node& operator=(Node const& rhs) = default;
+  Node& operator=(Node const& rhs) noexcept = delete;
   Node& operator=(Node&& rhs) noexcept = default;
 
   virtual std::ostream& print(PrintOptions const& opt, std::ostream&) const = 0;
+  virtual std::unique_ptr<Node> deepClone() const = 0;
 
   void addNode(std::unique_ptr<Node>&& n);
   Node const* getNode(std::size_t index) const noexcept;
   size_t getNodeCount() const noexcept;
   Type getType() const noexcept;
+
+protected:
+  struct clone_tag
+  {
+  };
+
+  Node(clone_tag, Node const& b);
 
 private:
   std::vector<std::unique_ptr<Node>> children;

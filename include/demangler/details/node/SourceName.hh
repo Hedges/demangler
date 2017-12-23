@@ -18,15 +18,17 @@ class SourceName : public Node
 public:
   SourceName() noexcept;
   explicit SourceName(string_type pname) noexcept;
-  SourceName(SourceName const& b) = default;
+  SourceName(clone_tag, SourceName const& b);
+  SourceName(SourceName const& b) noexcept = delete;
   SourceName(SourceName&& b) noexcept = default;
   ~SourceName() noexcept = default;
 
-  SourceName& operator=(SourceName const& rhs) = default;
+  SourceName& operator=(SourceName const& rhs) noexcept = delete;
   SourceName& operator=(SourceName&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<SourceName> parse(State& s);
   string_type getName() const noexcept;

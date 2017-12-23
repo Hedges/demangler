@@ -17,15 +17,17 @@ class BareFunctionType : public Node
 {
 public:
   BareFunctionType() noexcept;
-  BareFunctionType(BareFunctionType const& b) = default;
+  BareFunctionType(clone_tag, BareFunctionType const& b);
+  BareFunctionType(BareFunctionType const& b) noexcept = delete;
   BareFunctionType(BareFunctionType&& b) noexcept = default;
   ~BareFunctionType() noexcept = default;
 
-  BareFunctionType& operator=(BareFunctionType const& rhs) = default;
+  BareFunctionType& operator=(BareFunctionType const& rhs) noexcept = delete;
   BareFunctionType& operator=(BareFunctionType&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<BareFunctionType> parse(State& s);
 

@@ -18,15 +18,17 @@ class Type : public Node
 {
 public:
   Type() noexcept;
-  Type(Type const& b) = default;
+  Type(clone_tag, Type const& b);
+  Type(Type const& b) noexcept = delete;
   Type(Type&& b) noexcept = default;
   ~Type() noexcept = default;
 
-  Type& operator=(Type const& rhs) = default;
+  Type& operator=(Type const& rhs) noexcept = delete;
   Type& operator=(Type&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<Type> parse(State& s);
 

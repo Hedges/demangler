@@ -17,15 +17,17 @@ class Name : public Node
 {
 public:
   Name() noexcept;
-  Name(Name const& b) = default;
+  Name(clone_tag, Name const& b);
+  Name(Name const& b) noexcept = delete;
   Name(Name&& b) noexcept = default;
   ~Name() noexcept = default;
 
-  Name& operator=(Name const& rhs) = default;
+  Name& operator=(Name const& rhs) noexcept = delete;
   Name& operator=(Name&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<Name> parse(State& s);
 };

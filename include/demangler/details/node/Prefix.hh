@@ -17,15 +17,17 @@ class Prefix : public Node
 {
 public:
   Prefix() noexcept;
-  Prefix(Prefix const& b) = default;
+  Prefix(clone_tag, Prefix const& b);
+  Prefix(Prefix const& b) noexcept = delete;
   Prefix(Prefix&& b) noexcept = default;
   ~Prefix() noexcept = default;
 
-  Prefix& operator=(Prefix const& rhs) = default;
+  Prefix& operator=(Prefix const& rhs) noexcept = delete;
   Prefix& operator=(Prefix&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<Prefix> parse(State& s, string_type ctorname = {});
 };

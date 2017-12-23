@@ -27,5 +27,12 @@ Node::Type Node::getType() const noexcept
 {
   return this->type;
 }
+
+Node::Node(clone_tag, Node const& b) : type{b.type}
+{
+  this->children.reserve(b.children.size());
+  for (auto const& child : b.children)
+    this->children.emplace_back(child->deepClone());
+}
 }
 }

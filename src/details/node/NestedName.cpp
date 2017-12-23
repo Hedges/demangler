@@ -19,6 +19,11 @@ NestedName::NestedName() noexcept : Node{Type::NestedName}
 {
 }
 
+NestedName::NestedName(clone_tag, NestedName const& b)
+  : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& NestedName::print(PrintOptions const& opt,
                                 std::ostream& out) const
 {
@@ -27,6 +32,11 @@ std::ostream& NestedName::print(PrintOptions const& opt,
   out << "::";
   this->getNode(1)->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> NestedName::deepClone() const
+{
+  return std::make_unique<NestedName>(clone_tag{}, *this);
 }
 
 std::unique_ptr<NestedName> NestedName::parse(State& s)

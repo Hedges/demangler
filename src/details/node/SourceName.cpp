@@ -20,10 +20,20 @@ SourceName::SourceName(string_type pname) noexcept
 {
 }
 
+SourceName::SourceName(clone_tag, SourceName const& b)
+  : Node{clone_tag{}, b}, name{b.name}
+{
+}
+
 std::ostream& SourceName::print(PrintOptions const&, std::ostream& out) const
 {
   printStringSpan(out, this->name);
   return out;
+}
+
+std::unique_ptr<Node> SourceName::deepClone() const
+{
+  return std::make_unique<SourceName>(clone_tag{}, *this);
 }
 
 std::unique_ptr<SourceName> SourceName::parse(State& s)

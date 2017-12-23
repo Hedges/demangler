@@ -17,6 +17,11 @@ UnscopedName::UnscopedName() noexcept : Node{Type::UnscopedName}, is_std{false}
 {
 }
 
+UnscopedName::UnscopedName(clone_tag, UnscopedName const& b)
+  : Node{clone_tag{}, b}, is_std{b.is_std}
+{
+}
+
 std::ostream& UnscopedName::print(PrintOptions const& opt,
                                   std::ostream& out) const
 {
@@ -25,6 +30,11 @@ std::ostream& UnscopedName::print(PrintOptions const& opt,
     out << "std::";
   this->getNode(0)->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> UnscopedName::deepClone() const
+{
+  return std::make_unique<UnscopedName>(clone_tag{}, *this);
 }
 
 std::unique_ptr<UnscopedName> UnscopedName::parse(State& s)

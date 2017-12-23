@@ -18,12 +18,22 @@ TemplateParam::TemplateParam() noexcept
 {
 }
 
+TemplateParam::TemplateParam(clone_tag, TemplateParam const& b)
+  : Node{clone_tag{}, b}, substitution{b.substitution}, index{b.index}
+{
+}
+
 std::ostream& TemplateParam::print(PrintOptions const& opt,
                                    std::ostream& out) const
 {
   assert(this->substitution);
   this->substitution->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> TemplateParam::deepClone() const
+{
+  return std::make_unique<TemplateParam>(clone_tag{}, *this);
 }
 
 std::unique_ptr<TemplateParam> TemplateParam::parse(State& s)

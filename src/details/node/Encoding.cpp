@@ -17,12 +17,21 @@ Encoding::Encoding() noexcept : Node{Type::Encoding}
 {
 }
 
+Encoding::Encoding(clone_tag, Encoding const& b) : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& Encoding::print(PrintOptions const& opt, std::ostream& out) const
 {
   assert(this->getNodeCount() != 0);
   for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
     this->getNode(i)->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> Encoding::deepClone() const
+{
+  return std::make_unique<Encoding>(clone_tag{}, *this);
 }
 
 std::unique_ptr<Encoding> Encoding::parse(State& s)

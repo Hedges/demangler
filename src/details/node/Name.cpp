@@ -21,12 +21,21 @@ Name::Name() noexcept : Node{Type::Name}
 {
 }
 
+Name::Name(clone_tag, Name const& b) : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& Name::print(PrintOptions const& opt, std::ostream& out) const
 {
   assert(this->getNodeCount() > 0);
   for (auto i = 0u; i < this->getNodeCount(); ++i)
     this->getNode(i)->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> Name::deepClone() const
+{
+  return std::make_unique<Name>(clone_tag{}, *this);
 }
 
 std::unique_ptr<Name> Name::parse(State& s)

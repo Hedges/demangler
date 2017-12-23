@@ -17,15 +17,17 @@ class Constructor : public Node
 {
 public:
   explicit Constructor(string_type subst) noexcept;
-  Constructor(Constructor const& b) = default;
+  Constructor(clone_tag, Constructor const& b);
+  Constructor(Constructor const& b) noexcept = delete;
   Constructor(Constructor&& b) noexcept = default;
   ~Constructor() noexcept = default;
 
-  Constructor& operator=(Constructor const& rhs) = default;
+  Constructor& operator=(Constructor const& rhs) noexcept = delete;
   Constructor& operator=(Constructor&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
 private:
   string_type substitution;

@@ -17,12 +17,21 @@ TemplateArg::TemplateArg() noexcept : Node{Type::TemplateArg}
 {
 }
 
+TemplateArg::TemplateArg(clone_tag, TemplateArg const& b) : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& TemplateArg::print(PrintOptions const& opt,
                                  std::ostream& out) const
 {
   assert(this->getNodeCount() == 1);
   this->getNode(0)->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> TemplateArg::deepClone() const
+{
+  return std::make_unique<TemplateArg>(clone_tag{}, *this);
 }
 
 std::unique_ptr<TemplateArg> TemplateArg::parse(State& s)

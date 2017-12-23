@@ -58,6 +58,11 @@ Type::Type() noexcept
 {
 }
 
+Type::Type(clone_tag, Type const& b)
+  : Node{clone_tag{}, b}, cv_qualifiers{b.cv_qualifiers}
+{
+}
+
 std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
 {
   assert(this->getNodeCount() != 0);
@@ -74,6 +79,11 @@ std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
     out << qualit->second;
   }
   return out;
+}
+
+std::unique_ptr<Node> Type::deepClone() const
+{
+  return std::make_unique<Type>(clone_tag{}, *this);
 }
 
 std::unique_ptr<Type> Type::parse(State& s)

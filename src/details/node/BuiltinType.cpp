@@ -17,10 +17,20 @@ BuiltinType::BuiltinType(gsl::cstring_span<> type) noexcept
 {
 }
 
+BuiltinType::BuiltinType(clone_tag, BuiltinType const& b)
+  : Node{clone_tag{}, b}, builtintype{b.builtintype}
+{
+}
+
 std::ostream& BuiltinType::print(PrintOptions const&, std::ostream& out) const
 {
   printStringSpan(out, this->builtintype);
   return out;
+}
+
+std::unique_ptr<Node> BuiltinType::deepClone() const
+{
+  return std::make_unique<BuiltinType>(clone_tag{}, *this);
 }
 
 gsl::cstring_span<> BuiltinType::getTypeName() const noexcept

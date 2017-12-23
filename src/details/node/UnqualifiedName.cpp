@@ -19,12 +19,22 @@ UnqualifiedName::UnqualifiedName() noexcept : Node{Type::UnqualifiedName}
 {
 }
 
+UnqualifiedName::UnqualifiedName(clone_tag, UnqualifiedName const& b)
+  : Node{clone_tag{}, b}
+{
+}
+
 std::ostream& UnqualifiedName::print(PrintOptions const& opt,
                                      std::ostream& out) const
 {
   assert(this->getNodeCount() == 1);
   this->getNode(0)->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> UnqualifiedName::deepClone() const
+{
+  return std::make_unique<UnqualifiedName>(clone_tag{}, *this);
 }
 
 std::unique_ptr<UnqualifiedName> UnqualifiedName::parse(State& s,

@@ -17,15 +17,17 @@ class MangledName : public Node
 {
 public:
   MangledName() noexcept;
-  MangledName(MangledName const& b) = default;
+  MangledName(clone_tag, MangledName const& b);
+  MangledName(MangledName const& b) noexcept = delete;
   MangledName(MangledName&& b) noexcept = default;
   ~MangledName() noexcept = default;
 
-  MangledName& operator=(MangledName const& rhs) = default;
+  MangledName& operator=(MangledName const& rhs) noexcept = delete;
   MangledName& operator=(MangledName&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static constexpr bool isMangled(string_type symbol) noexcept
   {

@@ -17,15 +17,17 @@ class NestedName : public Node
 {
 public:
   NestedName() noexcept;
-  NestedName(NestedName const& b) = default;
+  NestedName(clone_tag, NestedName const& b);
+  NestedName(NestedName const& b) noexcept = delete;
   NestedName(NestedName&& b) noexcept = default;
   ~NestedName() noexcept = default;
 
-  NestedName& operator=(NestedName const& rhs) = default;
+  NestedName& operator=(NestedName const& rhs) noexcept = delete;
   NestedName& operator=(NestedName&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<NestedName> parse(State& s);
 

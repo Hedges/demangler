@@ -17,15 +17,17 @@ class UnqualifiedName : public Node
 {
 public:
   UnqualifiedName() noexcept;
-  UnqualifiedName(UnqualifiedName const& b) = default;
+  UnqualifiedName(clone_tag, UnqualifiedName const& b);
+  UnqualifiedName(UnqualifiedName const& b) noexcept = delete;
   UnqualifiedName(UnqualifiedName&& b) noexcept = default;
   ~UnqualifiedName() noexcept = default;
 
-  UnqualifiedName& operator=(UnqualifiedName const& rhs) = default;
+  UnqualifiedName& operator=(UnqualifiedName const& rhs) noexcept = delete;
   UnqualifiedName& operator=(UnqualifiedName&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
+  std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<UnqualifiedName> parse(State& s,
                                                 string_type ctorname = {});

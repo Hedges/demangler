@@ -142,12 +142,22 @@ Substitution::Substitution() noexcept : Node{Type::Substitution}, node{nullptr}
 {
 }
 
+Substitution::Substitution(clone_tag, Substitution const& b)
+  : Node{clone_tag{}, b}, node{b.node}
+{
+}
+
 std::ostream& Substitution::print(PrintOptions const& opt,
                                   std::ostream& out) const
 {
   assert(this->getNodeCount() == 1 || this->node);
   this->getSubstitutedNode()->print(opt, out);
   return out;
+}
+
+std::unique_ptr<Node> Substitution::deepClone() const
+{
+  return std::make_unique<Substitution>(clone_tag{}, *this);
 }
 
 Node const* Substitution::getSubstitutedNode() const noexcept
