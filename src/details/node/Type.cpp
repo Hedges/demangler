@@ -123,7 +123,7 @@ std::unique_ptr<Type> Type::parse(State& s)
     ret->addNode(TemplateParam::parse(s));
     return ret;
   }
-  else if (std::isdigit(s.nextChar()))
+  else
   {
     auto name = Name::parse(s);
     s.user_substitutions.emplace_back(name.get());

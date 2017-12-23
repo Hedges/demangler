@@ -184,8 +184,7 @@ std::unique_ptr<Substitution> Substitution::parse(State& s)
       throw std::runtime_error("Invalid substitution index (got " +
                                std::to_string(s.user_substitutions.size()) +
                                " so far): " + s.toString());
-    ret->addNode(
-        std::make_unique<UserSubstitution>(s.user_substitutions[seqid]));
+    ret->addNode(s.user_substitutions[seqid]->deepClone());
     if (s.nextChar() != '_')
     {
       // Restore old symbol state for displaying.
@@ -202,7 +201,7 @@ std::unique_ptr<Substitution> Substitution::parse(State& s)
       throw std::runtime_error("Invalid substitution index (got " +
                                std::to_string(s.user_substitutions.size()) +
                                " so far): " + s.toString());
-    ret->addNode(std::make_unique<UserSubstitution>(s.user_substitutions[0]));
+    ret->addNode(s.user_substitutions[0]->deepClone());
     s.advance(1);
     return ret;
   }

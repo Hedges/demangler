@@ -49,7 +49,7 @@ std::unique_ptr<TemplateParam> TemplateParam::parse(State& s)
 }
 
 void TemplateParam::assignSubstitution(
-    std::vector<Node*> const& template_substitutions)
+    std::vector<Node const*> const& template_substitutions)
 {
   if (this->index >= template_substitutions.size())
     throw std::runtime_error("TemplateParam with index too high");

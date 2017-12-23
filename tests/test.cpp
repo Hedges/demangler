@@ -398,16 +398,33 @@ TEST_CASE("Preset substitution")
 
 TEST_CASE("Substitutions")
 {
-  // clang-format off
-  auto const data = TestData{
-    "_Z3foo3bar3bazS_S0_",
-    "foo(bar, baz, bar, baz)",
-    "foo",
-    "foo(bar, baz, bar, baz)",
-    "foo"
-  };
-  // clang-format on
-  CHECK_TEST(data);
+  SECTION("Simple substitution")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3foo3bar3bazS_S0_",
+      "foo(bar, baz, bar, baz)",
+      "foo",
+      "foo(bar, baz, bar, baz)",
+      "foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("Namespace substitution")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_ZN1n1o3fooE3bar3bazS1_S2_NS0_3lelE",
+      "n::o::foo(bar, baz, bar, baz, n::o::lel)",
+      "n::o::foo",
+      "n::o::foo(bar, baz, bar, baz, n::o::lel)",
+      "n::o::foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("User-defined types")

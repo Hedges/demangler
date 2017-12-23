@@ -15,6 +15,17 @@ namespace details
 {
 namespace node
 {
+namespace
+{
+std::unique_ptr<NestedName> makeSubstitution(Node& prefix, Node& lastnode)
+{
+  auto ret = std::make_unique<NestedName>();
+  ret->addNode(prefix.deepClone());
+  ret->addNode(lastnode.deepClone());
+  return ret;
+}
+}
+
 NestedName::NestedName() noexcept : Node{Type::NestedName}
 {
 }
@@ -49,11 +60,19 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   auto prefixnode = std::make_unique<Prefix>();
 
   lastnode = Prefix::parse(s);
+  ret->substitutions_made.emplace_back(lastnode->deepClone());
+  s.user_substitutions.emplace_back(ret->substitutions_made.back().get());
+
   while (!s.empty() && s.nextChar() != 'E')
   {
     auto lastname = getLastName(lastnode.get());
     prefixnode->addNode(std::move(lastnode));
     lastnode = Prefix::parse(s, lastname);
+    
+    // Register substitution.
+    ret->substitutions_made.emplace_back(
+        makeSubstitution(*prefixnode, *lastnode));
+    s.user_substitutions.emplace_back(ret->substitutions_made.back().get());
   }
   if (s.empty())
   {
@@ -61,7 +80,11 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
     s.symbol = oldsymbol;
     throw std::runtime_error("Unfinished nested name: " + s.toString());
   }
-  s.user_substitutions.emplace_back(prefixnode.get());
+
+  // Full nested name is not candidate for substitution.
+  s.user_substitutions.pop_back();
+  ret->substitutions_made.pop_back();
+
   ret->addNode(std::move(prefixnode));
   ret->addNode(std::move(lastnode));
   s.advance(1);

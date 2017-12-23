@@ -4,6 +4,8 @@
 #include <cassert>
 #include <gsl/string_span>
 
+#include <demangler/details/node/Type.hh>
+
 namespace demangler
 {
 namespace details
@@ -72,6 +74,8 @@ std::unique_ptr<OperatorName> OperatorName::parse(State& s)
     return nullptr;
   auto ret = std::make_unique<OperatorName>();
   ret->typeinfo = typeinfo;
+  if (typeinfo->operator_type == OperatorType::cv)
+    ret->addNode(node::Type::parse(s));
   return ret;
 }
 

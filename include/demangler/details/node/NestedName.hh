@@ -34,6 +34,13 @@ public:
 private:
   // Returns, if any, the last name seen. Used for constructors and destructors.
   static string_type getLastName(Node const* lastnode);
+
+  // Nested names generate a lot of substitutions: a::b::c::d generates a,
+  // a::b, a::b::c and a::b::c::d.
+  // Not all those substitutions are kept in our AST. In the above example,
+  // only a::b::c::d is kept.
+  // This holds owning pointers to what will later be used for substitutions.
+  std::vector<std::unique_ptr<Node>> substitutions_made;
 };
 }
 }
