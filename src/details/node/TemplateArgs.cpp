@@ -60,6 +60,9 @@ std::unique_ptr<TemplateArgs> TemplateArgs::parse(State& s)
     s.symbol = oldsymbol;
     throw std::runtime_error("Unfinised template: " + s.toString());
   }
+  s.template_substitutions.resize(ret->getNodeCount());
+  for (auto i = size_t{0}; i < ret->getNodeCount(); ++i)
+    s.template_substitutions[i] = ret->getNode(i);
   s.advance(1);
   return ret;
 }

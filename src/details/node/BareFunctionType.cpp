@@ -53,6 +53,13 @@ std::unique_ptr<BareFunctionType> BareFunctionType::parse(State& s)
   auto ret = std::make_unique<BareFunctionType>();
   while (!s.empty())
   {
+    // A template function has 'v' as argument, followed by the function
+    // arguments, so we need to skip it.
+    // i.e.:
+    // template <typename T> void foo(T)
+    // template <> void f(int) -> _Z3fooIiEvT_
+    if (s.nextChar() == 'v' && s.charsRemaining() != 1)
+      s.advance(1);
     auto type = node::Type::parse(s);
     ret->addNode(std::move(type));
   }

@@ -463,6 +463,20 @@ TEST_CASE("Template")
     // clang-format on
     CHECK_TEST(data);
   }
+
+  SECTION("Simple template substitution")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3fooIiEvT_",
+      "foo<int>(int)",
+      "foo<int>",
+      "foo(int)",
+      "foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("Namespace")
