@@ -44,16 +44,15 @@ std::unique_ptr<TemplateParam> TemplateParam::parse(State& s)
   auto ret = std::make_unique<TemplateParam>();
   ret->index = index;
   if (!s.awaiting_template)
-    ret->assignSubstitution(s.template_substitutions);
+    ret->performSubstitution(s);
   return ret;
 }
 
-void TemplateParam::assignSubstitution(
-    std::vector<Node const*> const& template_substitutions)
+void TemplateParam::performSubstitution(State const& s)
 {
-  if (this->index >= template_substitutions.size())
+  if (this->index >= s.template_substitutions.size())
     throw std::runtime_error("TemplateParam with index too high");
-  this->substitution = template_substitutions[this->index];
+  this->substitution = s.template_substitutions[this->index];
 }
 }
 }

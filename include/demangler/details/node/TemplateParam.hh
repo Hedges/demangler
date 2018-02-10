@@ -27,8 +27,7 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
   static std::unique_ptr<TemplateParam> parse(State& s);
-  void assignSubstitution(
-      std::vector<Node const*> const& template_substitutions);
+  void performSubstitution(State const& s);
 
 private:
   Node const* substitution;

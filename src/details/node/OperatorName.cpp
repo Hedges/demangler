@@ -75,7 +75,14 @@ std::unique_ptr<OperatorName> OperatorName::parse(State& s)
   auto ret = std::make_unique<OperatorName>();
   ret->typeinfo = typeinfo;
   if (typeinfo->operator_type == OperatorType::cv)
-    ret->addNode(node::Type::parse(s));
+  {
+    s.awaiting_template = true;
+    ret->addNode(node::Type::parse(s, false));
+    s.awaiting_template = false;
+    s.template_substitutions_resolver = [node = ret.get()] (State const& s) {
+      node->assignTemplateSubstitutions(s);
+    };
+  }
   return ret;
 }
 

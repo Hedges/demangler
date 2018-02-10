@@ -63,6 +63,11 @@ std::unique_ptr<TemplateArgs> TemplateArgs::parse(State& s)
   s.template_substitutions.resize(ret->getNodeCount());
   for (auto i = size_t{0}; i < ret->getNodeCount(); ++i)
     s.template_substitutions[i] = ret->getNode(i);
+  if (s.template_substitutions_resolver)
+  {
+    s.template_substitutions_resolver(s);
+    s.template_substitutions_resolver = nullptr;
+  }
   s.advance(1);
   return ret;
 }

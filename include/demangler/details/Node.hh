@@ -55,8 +55,10 @@ public:
 
   void addNode(std::unique_ptr<Node>&& n);
   Node const* getNode(std::size_t index) const noexcept;
+  Node* getNode(std::size_t index) noexcept;
   size_t getNodeCount() const noexcept;
   Type getType() const noexcept;
+  void assignTemplateSubstitutions(State const& s);
 
 protected:
   struct clone_tag

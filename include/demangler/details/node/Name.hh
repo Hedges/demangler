@@ -29,7 +29,9 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
 
-  static std::unique_ptr<Name> parse(State& s);
+  // parse_template_args: Whether Name should eat the template-args if it
+  // encounters one (`I...E`).
+  static std::unique_ptr<Name> parse(State& s, bool parse_template_args = true);
 };
 }
 }

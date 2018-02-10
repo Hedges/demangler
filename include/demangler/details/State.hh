@@ -1,6 +1,7 @@
 #ifndef DEMANGLER_DETAILS_STATE_HH_
 #define DEMANGLER_DETAILS_STATE_HH_
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -48,6 +49,7 @@ struct State
   // yet known. This boolean should be set to true in such event where
   // substition will be resolved later.
   bool awaiting_template;
+  std::function<void(State& s)> template_substitutions_resolver;
   std::vector<Node const*> template_substitutions;
 };
 }

@@ -1,6 +1,7 @@
 #include <demangler/details/node/Type.hh>
 
 #include <cassert>
+#include <iostream>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -86,7 +87,7 @@ std::unique_ptr<Node> Type::deepClone() const
   return std::make_unique<Type>(clone_tag{}, *this);
 }
 
-std::unique_ptr<Type> Type::parse(State& s)
+std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
 {
   auto ret = std::make_unique<Type>();
 
@@ -125,7 +126,7 @@ std::unique_ptr<Type> Type::parse(State& s)
   }
   else
   {
-    auto name = Name::parse(s);
+    auto name = Name::parse(s, parse_template_args);
     s.user_substitutions.emplace_back(name.get());
     ret->addNode(std::move(name));
     return ret;

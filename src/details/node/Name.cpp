@@ -38,7 +38,7 @@ std::unique_ptr<Node> Name::deepClone() const
   return std::make_unique<Name>(clone_tag{}, *this);
 }
 
-std::unique_ptr<Name> Name::parse(State& s)
+std::unique_ptr<Name> Name::parse(State& s, bool parse_template_args)
 {
   auto ret = std::make_unique<Name>();
 
@@ -55,7 +55,7 @@ std::unique_ptr<Name> Name::parse(State& s)
   }
   else
     ret->addNode(UnqualifiedName::parse(s));
-  if (!s.empty() && s.nextChar() == 'I')
+  if (!s.empty() && s.nextChar() == 'I' && parse_template_args)
     ret->addNode(TemplateArgs::parse(s));
   return ret;
 }
