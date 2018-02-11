@@ -58,7 +58,7 @@ std::unique_ptr<TemplateArgs> TemplateArgs::parse(State& s)
   {
     // Restore oldsymbol for displaying.
     s.symbol = oldsymbol;
-    throw std::runtime_error("Unfinised template: " + s.toString());
+    throw std::runtime_error("Unfinished template: " + s.toString());
   }
   s.template_substitutions.resize(ret->getNodeCount());
   for (auto i = size_t{0}; i < ret->getNodeCount(); ++i)
