@@ -6,6 +6,7 @@
 #include <gsl/string_span>
 
 #include <demangler/details/Node.hh>
+#include <demangler/details/node/Type.hh>
 
 namespace demangler
 {
@@ -29,10 +30,21 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
 
-  static std::unique_ptr<BareFunctionType> parse(State& s);
+  static std::unique_ptr<BareFunctionType> parse(State& s,
+                                                 bool phas_return_type);
+
+  // Check whether the bare-function-type holds the return type of the
+  // function. If it does, retrieveReturnType will return an owning pointer to
+  // that node.
+  // Only ONE call to retrieveReturnType will succeed.
+  bool hasReturnType() const noexcept;
+  std::unique_ptr<node::Type> retrieveReturnType() noexcept;
 
 private:
   bool isVoidFunction() const noexcept;
+
+  bool has_return_type;
+  std::unique_ptr<node::Type> return_type;
 };
 }
 }

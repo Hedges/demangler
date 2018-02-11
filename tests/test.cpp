@@ -469,9 +469,9 @@ TEST_CASE("Template")
     // clang-format off
     auto const data = TestData{
       "_Z3fooIiEvT_",
-      "foo<int>(int)",
+      "void foo<int>(int)",
       "foo<int>",
-      "foo(int)",
+      "void foo(int)",
       "foo"
     };
     // clang-format on

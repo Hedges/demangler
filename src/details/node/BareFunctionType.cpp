@@ -48,22 +48,33 @@ std::unique_ptr<Node> BareFunctionType::deepClone() const
   return std::make_unique<BareFunctionType>(clone_tag{}, *this);
 }
 
-std::unique_ptr<BareFunctionType> BareFunctionType::parse(State& s)
+std::unique_ptr<BareFunctionType> BareFunctionType::parse(State& s,
+                                                          bool phas_return_type)
 {
+  assert(!s.empty());
   auto ret = std::make_unique<BareFunctionType>();
+  if (phas_return_type)
+    ret->return_type = node::Type::parse(s);
   while (!s.empty())
   {
-    // A template function has 'v' as argument, followed by the function
-    // arguments, so we need to skip it.
-    // i.e.:
-    // template <typename T> void foo(T)
-    // template <> void f(int) -> _Z3fooIiEvT_
-    if (s.nextChar() == 'v' && s.charsRemaining() != 1)
-      s.advance(1);
     auto type = node::Type::parse(s);
     ret->addNode(std::move(type));
   }
+  ret->has_return_type = phas_return_type;
   return ret;
+}
+
+bool BareFunctionType::hasReturnType() const noexcept
+{
+  return this->has_return_type;
+}
+
+std::unique_ptr<node::Type> BareFunctionType::retrieveReturnType() noexcept
+{
+  if (!this->hasReturnType())
+    return nullptr;
+  this->has_return_type = false;
+  return std::move(this->return_type);
 }
 
 bool BareFunctionType::isVoidFunction() const noexcept
