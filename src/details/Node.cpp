@@ -6,6 +6,39 @@ namespace demangler
 {
 namespace details
 {
+namespace
+{
+constexpr char const* nodeTypeToString(Node::Type t)
+{
+  switch (t)
+  {
+#define MAKE_CASE(t)  \
+  case Node::Type::t: \
+    return #t;
+    MAKE_CASE(BareFunctionType)
+    MAKE_CASE(BuiltinSubstitution)
+    MAKE_CASE(BuiltinType)
+    MAKE_CASE(Constructor)
+    MAKE_CASE(Encoding)
+    MAKE_CASE(MangledName)
+    MAKE_CASE(Name)
+    MAKE_CASE(NestedName)
+    MAKE_CASE(OperatorName)
+    MAKE_CASE(Prefix)
+    MAKE_CASE(SourceName)
+    MAKE_CASE(Substitution)
+    MAKE_CASE(TemplateArg)
+    MAKE_CASE(TemplateArgs)
+    MAKE_CASE(TemplateParam)
+    MAKE_CASE(Type)
+    MAKE_CASE(UnqualifiedName)
+    MAKE_CASE(UnscopedName)
+    MAKE_CASE(UnscopedTemplateName)
+    MAKE_CASE(UserSubstitution)
+#undef MAKE_CASE
+  }
+}
+}
 Node::Node(Type t) noexcept : type{t}
 {
 }
@@ -44,6 +77,25 @@ void Node::assignTemplateSubstitutions(State const& s)
     else
       static_cast<node::TemplateParam*>(child.get())->performSubstitution(s);
   }
+}
+
+void Node::dumpAST(std::ostream& out, size_t indent) const
+{
+  std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
+  out << '{' << ' ' << nodeTypeToString(this->getType());
+  if (this->getNodeCount() > 0)
+  {
+    out << '\n';
+    for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
+    {
+      this->getNode(i)->dumpAST(out, indent + 1);
+      out << '\n';
+    }
+    std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
+    out << '}';
+  }
+  else
+    out << ' ' << '}';
 }
 
 Node::Node(clone_tag, Node const& b) : type{b.type}

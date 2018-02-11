@@ -60,6 +60,8 @@ public:
   Type getType() const noexcept;
   void assignTemplateSubstitutions(State const& s);
 
+  void dumpAST(std::ostream& out, size_t indent = 0) const;
+
 protected:
   struct clone_tag
   {
