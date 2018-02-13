@@ -80,6 +80,11 @@ void Node::assignTemplateSubstitutions(State const& s)
   }
 }
 
+bool Node::isEmpty() const noexcept
+{
+  return this->empty;
+}
+
 void Node::dumpAST(std::ostream& out, size_t indent) const
 {
   std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
@@ -104,6 +109,11 @@ Node::Node(clone_tag, Node const& b) : type{b.type}
   this->children.reserve(b.children.size());
   for (auto const& child : b.children)
     this->addNode(child->deepClone());
+}
+
+void Node::setEmpty(bool pempty) noexcept
+{
+  this->empty = pempty;
 }
 }
 }

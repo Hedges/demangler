@@ -479,6 +479,23 @@ TEST_CASE("Template")
   }
 }
 
+TEST_CASE("Argument packs")
+{
+  SECTION("Empty pack")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3fooIiiJEEmT_T0_DpT1_",
+      "unsigned long foo<int, int>(int, int)",
+      "foo<int, int>",
+      "unsigned long foo(int, int)",
+      "foo",
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+}
+
 TEST_CASE("Namespace")
 {
   SECTION("Simple")

@@ -1,11 +1,11 @@
 #include <demangler/details/node/Type.hh>
 
 #include <cassert>
-#include <iostream>
 #include <stdexcept>
 #include <unordered_map>
 
 #include <demangler/details/node/BuiltinType.hh>
+#include <demangler/details/node/Holder.hh>
 #include <demangler/details/node/Name.hh>
 #include <demangler/details/node/SourceName.hh>
 #include <demangler/details/node/TemplateParam.hh>
@@ -54,8 +54,7 @@ auto const cv_qualifiers_map = std::unordered_map<char, std::string>{
 };
 }
 
-Type::Type() noexcept
-  : Node{Node::Type::Type}
+Type::Type() noexcept : Node{Node::Type::Type}
 {
 }
 
@@ -91,11 +90,14 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
 {
   auto ret = std::make_unique<Type>();
 
-  while (cv_qualifiers_map.find(s.nextChar()) != cv_qualifiers_map.end())
+  while (!s.empty() &&
+         cv_qualifiers_map.find(s.nextChar()) != cv_qualifiers_map.end())
   {
     ret->cv_qualifiers += s.nextChar();
     s.advance(1);
   }
+  if (s.empty())
+    throw std::runtime_error("Unfinished Type");
   auto it = builtin_types_map.find(s.nextChar());
   if (it != builtin_types_map.end())
   {
@@ -106,7 +108,7 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
   else if (s.nextChar() == 'D')
   {
     s.advance(1);
-    return parseD(s);
+    return parseD(s, std::move(ret));
   }
   else if (s.nextChar() == 'u')
   {
@@ -116,8 +118,8 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
   }
   else if (s.nextChar() == 'S')
   {
-      ret->addNode(Name::parse(s));
-      return ret;
+    ret->addNode(Name::parse(s));
+    return ret;
   }
   else if (s.nextChar() == 'T')
   {
@@ -134,16 +136,14 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
   throw std::runtime_error("Unknown type: " + s.toString());
 }
 
-std::unique_ptr<Type> Type::parseD(State& s)
+std::unique_ptr<Type> Type::parseD(State& s, std::unique_ptr<Type>&& ret)
 {
-  auto ret = std::make_unique<Type>();
-
   auto const it = builtin_D_type.find(s.nextChar());
   if (it != builtin_D_type.end())
   {
     s.advance(1);
     ret->addNode(std::make_unique<BuiltinType>(it->second));
-    return ret;
+    return std::move(ret);
   }
 
   switch (s.nextChar())
@@ -152,7 +152,10 @@ std::unique_ptr<Type> Type::parseD(State& s)
   case 't':
     throw std::runtime_error("Unsupported type DT/Dt (decltype expr)");
   case 'p':
-    throw std::runtime_error("Unsupported type Dp (pack expansion)");
+    s.advance(1);
+    if (s.empty())
+      throw std::runtime_error("Empty parameter pack (Dp)");
+    return parseDp(s, std::move(ret));
   case 'F':
     throw std::runtime_error("Unsupported type DF (unknown)");
   case 'v':
@@ -160,6 +163,22 @@ std::unique_ptr<Type> Type::parseD(State& s)
   default:
     throw std::runtime_error("Unknown D code in type: " + s.toString());
   }
+}
+
+std::unique_ptr<Type> Type::parseDp(State& s, std::unique_ptr<Type>&& ret)
+{
+  if (s.nextChar() == 'T')
+  {
+    auto const& packnode = TemplateParam::parseParamNode(s);
+    if (packnode.getNodeCount() > 0)
+      ret->addNode(std::make_unique<Holder>(packnode));
+    else
+      ret->setEmpty(true);
+  }
+  else
+    throw std::runtime_error("Invalid symbols in Dp: " +
+                             std::string(s.symbol.data()));
+  return std::move(ret);
 }
 }
 }

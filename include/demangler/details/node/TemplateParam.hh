@@ -27,9 +27,14 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
   static std::unique_ptr<TemplateParam> parse(State& s);
+  // Parses the template-param and returns a reference to the substituted node.
+  // This method consumes characters from the state.
+  static Node const& parseParamNode(State& s);
   void performSubstitution(State const& s);
 
 private:
+  static Node const* getSubstitutedNodePtr(State const& s, std::size_t idx);
+
   Node const* substitution;
   unsigned int index;
 };

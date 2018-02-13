@@ -33,11 +33,18 @@ std::ostream& BareFunctionType::print(PrintOptions const& opt,
     return (out << "()");
 
   out << '(';
+  bool first = true;
   for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
   {
-    if (i)
-      out << ", ";
-    this->getNode(i)->print(opt, out);
+    auto const& node = *this->getNode(i);
+    if (!node.isEmpty())
+    {
+      if (first)
+        first = false;
+      else
+        out << ", ";
+      node.print(opt, out);
+    }
   }
   out << ')';
   return out;

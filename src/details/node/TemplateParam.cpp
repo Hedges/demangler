@@ -51,11 +51,28 @@ std::unique_ptr<TemplateParam> TemplateParam::parse(State& s)
   return ret;
 }
 
+Node const& TemplateParam::parseParamNode(State& s)
+{
+  assert(s.nextChar() == 'T');
+  s.advance(1);
+  auto const index = SeqId::parse(s);
+  if (s.empty() || s.nextChar() != '_')
+    throw std::runtime_error("TemplateParam does not end with '_'");
+  s.advance(1);
+  return *getSubstitutedNodePtr(s, index);
+}
+
 void TemplateParam::performSubstitution(State const& s)
 {
-  if (this->index >= s.template_substitutions.size())
+  this->substitution = this->getSubstitutedNodePtr(s, this->index);
+}
+
+Node const* TemplateParam::getSubstitutedNodePtr(State const& s,
+                                                 std::size_t idx)
+{
+  if (idx >= s.template_substitutions.size())
     throw std::runtime_error("TemplateParam with index too high");
-  this->substitution = s.template_substitutions[this->index];
+  return s.template_substitutions[idx];
 }
 }
 }

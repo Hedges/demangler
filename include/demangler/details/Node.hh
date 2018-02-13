@@ -60,6 +60,7 @@ public:
   size_t getNodeCount() const noexcept;
   Type getType() const noexcept;
   void assignTemplateSubstitutions(State const& s);
+  bool isEmpty() const noexcept;
 
   void dumpAST(std::ostream& out, size_t indent = 0) const;
 
@@ -69,10 +70,12 @@ protected:
   };
 
   Node(clone_tag, Node const& b);
+  void setEmpty(bool pempty) noexcept;
 
 private:
   std::vector<std::unique_ptr<Node>> children;
   Type type;
+  bool empty{false};
 };
 }
 }
