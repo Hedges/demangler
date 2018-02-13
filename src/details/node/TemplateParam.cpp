@@ -41,6 +41,9 @@ std::unique_ptr<TemplateParam> TemplateParam::parse(State& s)
   assert(s.nextChar() == 'T');
   s.advance(1);
   auto const index = SeqId::parse(s);
+  if (s.empty() || s.nextChar() != '_')
+    throw std::runtime_error("TemplateParam does not end with '_'");
+  s.advance(1);
   auto ret = std::make_unique<TemplateParam>();
   ret->index = index;
   if (!s.awaiting_template)

@@ -16,14 +16,10 @@ unsigned int SeqId::parse(State& s)
   static auto const digits =
       gsl::cstring_span<>{"0123456789ABCDEFGHIJKLMNOPQRSTUVVWXYZ"};
 
-  if (s.nextChar() == '_')
-  {
-    s.advance(1);
-    return 0;
-  }
-
   auto it = std::find(digits.begin(), digits.end(), s.nextChar());
-  assert(it != digits.end());
+  if (it == digits.end())
+    return 0;
+    
   auto ret = 0u;
   auto i = 0;
 
