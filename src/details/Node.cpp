@@ -35,6 +35,7 @@ constexpr char const* nodeTypeToString(Node::Type t)
     MAKE_CASE(UnscopedName)
     MAKE_CASE(UnscopedTemplateName)
     MAKE_CASE(UserSubstitution)
+    MAKE_CASE(HolderNode)
 #undef MAKE_CASE
   }
 }

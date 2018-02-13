@@ -40,6 +40,7 @@ public:
     UnscopedName,
     UnscopedTemplateName,
     UserSubstitution,
+    HolderNode, // Set apart, cause it's not really a node.
   };
 
   explicit Node(Type t) noexcept;
