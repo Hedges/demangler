@@ -278,19 +278,19 @@ constexpr auto const ext_demangle_nsamples =
     sizeof(ext_demangle_samples) / sizeof(ext_demangle_samples[0]);
 }
 
-#define CHECK_TEST(test)                                              \
-  auto const& input = test.input;                                     \
-  auto const& want = test.want;                                       \
-  auto const& want_no_params = test.want_no_params;                   \
-  auto const& want_no_template_param = test.want_no_template_param;   \
-  auto const& want_minimal = test.want_minimal;                       \
-                                                                      \
-  CHECK(want == demangler::demangle(input));                          \
-  CHECK(want_no_params ==                                             \
-        demangler::demangle(input, demangler::NoParamTag{}));         \
-  CHECK(want_no_template_param ==                                     \
-        demangler::demangle(input, demangler::NoTemplateParamTag{})); \
-  CHECK(want_minimal == demangler::demangle(input, demangler::MinimalTag{}));
+#define CHECK_TEST(test)                                               \
+  auto const& input = test.input;                                      \
+  auto const& want = test.want;                                        \
+  auto const& want_no_params = test.want_no_params;                    \
+  auto const& want_no_template_param = test.want_no_template_param;    \
+  auto const& want_minimal = test.want_minimal;                        \
+                                                                       \
+  CHECK(demangler::demangle(input) == want);                           \
+  CHECK(demangler::demangle(input, demangler::NoParamTag{}) ==         \
+        want_no_params);                                               \
+  CHECK(demangler::demangle(input, demangler::NoTemplateParamTag{}) == \
+        want_no_template_param);                                       \
+  CHECK(demangler::demangle(input, demangler::MinimalTag{}) == want_minimal);
 
 TEST_CASE("Not-mangled symbol")
 {
