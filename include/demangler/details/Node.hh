@@ -28,6 +28,7 @@ public:
     MangledName,
     Name,
     NestedName,
+    Number,
     OperatorName,
     Prefix,
     SourceName,

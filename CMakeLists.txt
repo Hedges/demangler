@@ -31,6 +31,7 @@ set(SRCS
   src/details/node/MangledName.cpp
   src/details/node/Name.cpp
   src/details/node/NestedName.cpp
+  src/details/node/Number.cpp
   src/details/node/OperatorName.cpp
   src/details/node/Prefix.cpp
   src/details/node/SeqId.cpp
