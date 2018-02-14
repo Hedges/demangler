@@ -631,6 +631,51 @@ TEST_CASE("Operators")
   }
 }
 
+TEST_CASE("Expr-primary")
+{
+  SECTION("Boolean")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3barILb1ELb0EEvv",
+      "void bar<true, false>()",
+      "bar<true, false>",
+      "void bar()",
+      "bar",
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("Integer")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3barILi1ELj0EEv3foo",
+      "void bar<(int)1, (unsigned int)0>(foo)",
+      "bar<(int)1, (unsigned int)0>",
+      "void bar(foo)",
+      "bar",
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("Pointer")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3barILPKc0EEvv",
+      "void bar<(char const*)0>()",
+      "bar<(char const*)0>",
+      "void bar()",
+      "bar",
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+}
+
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")
 {
   for (auto i = 0u; i < ext_demangle_nsamples; ++i)
