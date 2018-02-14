@@ -494,6 +494,34 @@ TEST_CASE("Argument packs")
     // clang-format on
     CHECK_TEST(data);
   }
+
+  SECTION("One argument pack")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3fooIiiJiEEmT_T0_DpT1_",
+      "unsigned long foo<int, int, int>(int, int, int)",
+      "foo<int, int, int>",
+      "unsigned long foo(int, int, int)",
+      "foo",
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("Two arguments pack")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3fooIijJPKcfEEmT_T0_DpT1_",
+      "unsigned long foo<int, unsigned int, char const*, float>(int, unsigned int, char const*, float)",
+      "foo<int, unsigned int, char const*, float>",
+      "unsigned long foo(int, unsigned int, char const*, float)",
+      "foo",
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("Namespace")
