@@ -16,7 +16,8 @@ namespace node
 class BuiltinType : public Node
 {
 public:
-  explicit BuiltinType(gsl::cstring_span<> builtintype) noexcept;
+  BuiltinType(gsl::cstring_span<> pmangled,
+              gsl::cstring_span<> pbuiltintype) noexcept;
   BuiltinType(clone_tag, BuiltinType const& b);
   BuiltinType(BuiltinType const& b) noexcept = delete;
   BuiltinType(BuiltinType&& b) noexcept = default;
@@ -29,8 +30,11 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
   gsl::cstring_span<> getTypeName() const noexcept;
+  gsl::cstring_span<> getMangledName() const noexcept;
+  bool isIntegral() const noexcept;
 
 private:
+  gsl::cstring_span<> mangled;
   gsl::cstring_span<> builtintype;
 };
 }

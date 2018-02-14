@@ -15,6 +15,14 @@ inline std::ostream& printStringSpan(std::ostream& out,
   out.write(span.data(), span.size());
   return out;
 }
+
+namespace span_literals
+{
+constexpr gsl::cstring_span<> operator""_cs(char const* s, size_t len)
+{
+  return {s, static_cast<gsl::cstring_span<>::index_type>(len)};
+}
+}
 }
 }
 

@@ -65,9 +65,9 @@ Type::Type(clone_tag, Type const& b)
 
 std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
 {
-  assert(this->getNodeCount() != 0);
-  for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
-    this->getNode(i)->print(opt, out);
+  assert(this->getNodeCount() == 1);
+
+  this->getNode(0)->print(opt, out);
   for (auto rit = this->cv_qualifiers.rbegin();
        rit != this->cv_qualifiers.rend();
        ++rit)
@@ -101,7 +101,8 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
   auto it = builtin_types_map.find(s.nextChar());
   if (it != builtin_types_map.end())
   {
-    ret->addNode(std::make_unique<BuiltinType>(it->second));
+    ret->addNode(
+        std::make_unique<BuiltinType>(s.symbol.subspan(0, 1), it->second));
     s.advance(1);
     return ret;
   }
@@ -141,8 +142,9 @@ std::unique_ptr<Type> Type::parseD(State& s, std::unique_ptr<Type>&& ret)
   auto const it = builtin_D_type.find(s.nextChar());
   if (it != builtin_D_type.end())
   {
+    ret->addNode(std::make_unique<BuiltinType>(
+        gsl::cstring_span<>{s.symbol.data() - 1, 2}, it->second));
     s.advance(1);
-    ret->addNode(std::make_unique<BuiltinType>(it->second));
     return std::move(ret);
   }
 

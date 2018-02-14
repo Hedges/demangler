@@ -56,7 +56,7 @@ std::unordered_map<char, std::unique_ptr<Node const>> getSubstitutions()
     name->addNode(std::make_unique<SourceName>(type));
     auto tpl = std::make_unique<TemplateArgs>();
     auto tplargs = std::make_unique<TemplateArg>();
-    tplargs->addNode(std::make_unique<BuiltinType>(strings[3]));
+    tplargs->addNode(std::make_unique<BuiltinType>("c", strings[3]));
     tpl->addNode(std::move(tplargs));
     name->addNode(std::move(tpl));
     ret->addNode(std::move(name));
@@ -82,7 +82,7 @@ std::unordered_map<char, std::unique_ptr<Node const>> getSubstitutions()
     name->addNode(std::make_unique<SourceName>(strings[2]));
     auto tpl = std::make_unique<TemplateArgs>();
     auto tplarg = std::make_unique<TemplateArg>();
-    tplarg->addNode(std::make_unique<BuiltinType>(strings[3]));
+    tplarg->addNode(std::make_unique<BuiltinType>("c", strings[3]));
     tpl->addNode(std::move(tplarg));
     tpl->addNode(getCharTplType(strings[4]));
     tpl->addNode(getCharTplType(strings[1]));
@@ -97,7 +97,7 @@ std::unordered_map<char, std::unique_ptr<Node const>> getSubstitutions()
     name->addNode(std::make_unique<SourceName>(strings[5]));
     auto tpl = std::make_unique<TemplateArgs>();
     auto tplarg = std::make_unique<TemplateArg>();
-    tplarg->addNode(std::make_unique<BuiltinType>(strings[3]));
+    tplarg->addNode(std::make_unique<BuiltinType>("c", strings[3]));
     tpl->addNode(std::move(tplarg));
     tpl->addNode(getCharTplType(strings[4]));
     name->addNode(std::move(tpl));
@@ -111,7 +111,7 @@ std::unordered_map<char, std::unique_ptr<Node const>> getSubstitutions()
     name->addNode(std::make_unique<SourceName>(strings[6]));
     auto tpl = std::make_unique<TemplateArgs>();
     auto tplarg = std::make_unique<TemplateArg>();
-    tplarg->addNode(std::make_unique<BuiltinType>(strings[3]));
+    tplarg->addNode(std::make_unique<BuiltinType>("c", strings[3]));
     tpl->addNode(std::move(tplarg));
     tpl->addNode(getCharTplType(strings[4]));
     name->addNode(std::move(tpl));
@@ -125,7 +125,7 @@ std::unordered_map<char, std::unique_ptr<Node const>> getSubstitutions()
     name->addNode(std::make_unique<SourceName>(strings[7]));
     auto tpl = std::make_unique<TemplateArgs>();
     auto tplarg = std::make_unique<TemplateArg>();
-    tplarg->addNode(std::make_unique<BuiltinType>(strings[3]));
+    tplarg->addNode(std::make_unique<BuiltinType>("c", strings[3]));
     tpl->addNode(std::move(tplarg));
     tpl->addNode(getCharTplType(strings[4]));
     name->addNode(std::move(tpl));
