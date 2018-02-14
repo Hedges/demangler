@@ -34,6 +34,8 @@ public:
   // template-args if it encounters one (`I...E`).
   static std::unique_ptr<Type> parse(State& s, bool parse_template_args = true);
 
+  bool isIntegral() const noexcept;
+
 private:
   static std::unique_ptr<Type> parseD(State& s, std::unique_ptr<Type>&& ret);
   static std::unique_ptr<Type> parseDp(State& s, std::unique_ptr<Type>&& ret);

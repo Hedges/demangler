@@ -1,5 +1,6 @@
 #include <demangler/details/node/Type.hh>
 
+#include <algorithm>
 #include <cassert>
 #include <stdexcept>
 #include <unordered_map>
@@ -135,6 +136,24 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
     return ret;
   }
   throw std::runtime_error("Unknown type: " + s.toString());
+}
+
+bool Type::isIntegral() const noexcept
+{
+  auto const contains = [](auto const& container, auto value) {
+    return std::find(container.begin(), container.end(), value) !=
+           container.end();
+  };
+
+  // Pointers and references are integrals.
+  if (contains(this->cv_qualifiers, 'P') ||
+      contains(this->cv_qualifiers, 'K') ||
+      contains(this->cv_qualifiers, 'R') || contains(this->cv_qualifiers, 'O'))
+    return true;
+  auto const& node = *this->getNode(0);
+  if (node.getType() == Node::Type::BuiltinType)
+    return static_cast<BuiltinType const&>(node).isIntegral();
+  return false;
 }
 
 std::unique_ptr<Type> Type::parseD(State& s, std::unique_ptr<Type>&& ret)
