@@ -25,6 +25,7 @@ public:
     BuiltinType,
     Constructor,
     Encoding,
+    ExprPrimary,
     MangledName,
     Name,
     NestedName,

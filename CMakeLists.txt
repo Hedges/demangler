@@ -27,6 +27,7 @@ set(SRCS
   src/details/node/Constructor.cpp
   src/details/Node.cpp
   src/details/node/Encoding.cpp
+  src/details/node/ExprPrimary.cpp
   src/details/node/Holder.cpp
   src/details/node/MangledName.cpp
   src/details/node/Name.cpp

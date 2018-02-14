@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include <demangler/details/Utils.hh>
+#include <demangler/details/node/ExprPrimary.hh>
 #include <demangler/details/node/Type.hh>
 
 namespace demangler
@@ -63,10 +64,8 @@ std::unique_ptr<TemplateArg> TemplateArg::parse(State& s)
       ret->setEmpty(true);
     s.advance(1); // Consume 'E'
   }
-  else if (s.nextChar() == 'X')
-    throw std::runtime_error("Expression unsupported in templates");
   else if (s.nextChar() == 'L')
-    throw std::runtime_error("Expr primary unsupported in templates");
+    ret->addNode(ExprPrimary::parse(s));
   else
     ret->addNode(node::Type::parse(s));
   return ret;
