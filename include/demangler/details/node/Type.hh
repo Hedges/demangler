@@ -44,6 +44,7 @@ private:
   void printCVQualifiers(std::ostream& out) const;
 
   std::string cv_qualifiers;
+  std::unique_ptr<Node> substitution_made;
 };
 }
 }

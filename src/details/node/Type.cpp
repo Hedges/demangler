@@ -97,6 +97,7 @@ std::unique_ptr<Node> Type::deepClone() const
 std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
 {
   auto ret = std::make_unique<Type>();
+  auto generates_substitution = true;
 
   while (!s.empty() &&
          cv_qualifiers_map.find(s.nextChar()) != cv_qualifiers_map.end())
@@ -112,39 +113,50 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
     ret->addNode(
         std::make_unique<BuiltinType>(s.symbol.subspan(0, 1), it->second));
     s.advance(1);
-    return ret;
+    generates_substitution = false;
   }
   else if (s.nextChar() == 'D')
   {
     s.advance(1);
-    return parseD(s, std::move(ret));
+    ret = parseD(s, std::move(ret));
   }
   else if (s.nextChar() == 'u')
   {
     s.advance(1);
     ret->addNode(SourceName::parse(s));
-    return ret;
   }
   else if (s.nextChar() == 'S')
   {
     ret->addNode(Name::parse(s));
-    return ret;
+    // Substitutions do not generate substitutions.
+    generates_substitution =
+        ret->getNode(0)->getNode(0)->getType() != Node::Type::Substitution;
   }
   else if (s.nextChar() == 'T')
   {
     ret->addNode(TemplateParam::parse(s));
-    return ret;
+    generates_substitution = false;
   }
   else if (s.nextChar() == 'F')
-    return parseF(s, std::move(ret));
+    ret = parseF(s, std::move(ret));
   else
   {
     auto name = Name::parse(s, parse_template_args);
-    s.user_substitutions.emplace_back(name.get());
     ret->addNode(std::move(name));
-    return ret;
   }
-  throw std::runtime_error("Unknown type: " + s.toString());
+  if (generates_substitution)
+  {
+    if (!ret->cv_qualifiers.empty())
+    {
+      auto tmp = std::string{std::move(ret->cv_qualifiers)};
+      ret->cv_qualifiers.clear();
+      ret->substitution_made = ret->deepClone();
+      s.user_substitutions.emplace_back(ret->substitution_made.get());
+      ret->cv_qualifiers = std::move(tmp);
+    }
+    s.user_substitutions.emplace_back(ret.get());
+  }
+  return ret;
 }
 
 bool Type::isIntegral() const noexcept
