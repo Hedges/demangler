@@ -48,7 +48,7 @@ public:
   explicit Node(Type t) noexcept;
   Node(Node const& b) noexcept = delete;
   Node(Node&& b) noexcept = default;
-  ~Node() noexcept = default;
+  virtual ~Node() noexcept = default;
 
   Node& operator=(Node const& rhs) noexcept = delete;
   Node& operator=(Node&& rhs) noexcept = default;
