@@ -47,6 +47,7 @@ set(SRCS
   src/details/node/UnscopedTemplateName.cpp
   src/details/node/UserSubstitution.cpp
   src/details/Parser.cpp
+  src/details/State.cpp
 )
 
 #binaries

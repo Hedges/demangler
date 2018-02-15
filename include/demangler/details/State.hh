@@ -14,30 +14,15 @@ namespace details
 class Node;
 struct State
 {
-  void advance(unsigned int n = 1) noexcept
-  {
-    this->symbol = this->symbol.subspan(n);
-  }
-  std::string toString() const
-  {
-    return gsl::to_string(this->symbol);
-  }
-  bool empty() const noexcept
-  {
-    return this->symbol.empty();
-  }
-  char nextChar() const noexcept
-  {
-    return this->symbol[0];
-  }
-  gsl::cstring_span<>::index_type charsRemaining() const noexcept
-  {
-    return this->symbol.size();
-  }
-  char peekChar(unsigned int idx) const noexcept
-  {
-    return this->symbol[idx];
-  }
+  void advance(unsigned int n = 1) noexcept;
+  std::string toString() const;
+  bool empty() const noexcept;
+  char nextChar() const noexcept;
+  gsl::cstring_span<>::index_type charsRemaining() const noexcept;
+  char peekChar(unsigned int idx) const noexcept;
+  void registerUserSubstitution(Node const* node);
+  Node const* getUserSubstitution(std::size_t index) const;
+  void dumpSubstitutions() const;
 
   gsl::cstring_span<> symbol;
   Node* parent;
