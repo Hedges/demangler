@@ -56,7 +56,7 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   auto const oldsymbol = s.symbol;
   s.advance(1);
   auto ret = std::make_unique<NestedName>();
-  auto lastnode = std::unique_ptr<Node>{nullptr};
+  auto lastnode = std::unique_ptr<Prefix>{nullptr};
   auto prefixnode = std::make_unique<Prefix>();
 
   lastnode = Prefix::parse(s);
@@ -67,12 +67,19 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   {
     auto lastname = getLastName(lastnode.get());
     prefixnode->addNode(std::move(lastnode));
-    lastnode = Prefix::parse(s, lastname);
+    lastnode = Prefix::parse(s, lastname, false);
     
     // Register substitution.
     ret->substitutions_made.emplace_back(
         makeSubstitution(*prefixnode, *lastnode));
     s.user_substitutions.emplace_back(ret->substitutions_made.back().get());
+    if (s.nextChar() == 'I')
+    {
+      lastnode->parseTemplate(s);
+      ret->substitutions_made.emplace_back(
+          makeSubstitution(*prefixnode, *lastnode));
+      s.user_substitutions.emplace_back(ret->substitutions_made.back().get());
+    }
   }
   if (s.empty())
   {

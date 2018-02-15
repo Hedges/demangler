@@ -41,7 +41,9 @@ std::unique_ptr<Node> Prefix::deepClone() const
   return std::make_unique<Prefix>(clone_tag{}, *this);
 }
 
-std::unique_ptr<Prefix> Prefix::parse(State& s, string_type ctorname)
+std::unique_ptr<Prefix> Prefix::parse(State& s,
+                                      string_type ctorname,
+                                      bool parse_template)
 {
   auto ret = std::make_unique<Prefix>();
 
@@ -49,9 +51,15 @@ std::unique_ptr<Prefix> Prefix::parse(State& s, string_type ctorname)
     ret->addNode(Substitution::parse(s));
   else
     ret->addNode(UnqualifiedName::parse(s, ctorname));
-  if (s.nextChar() == 'I')
-    ret->addNode(TemplateArgs::parse(s));
+  if (s.nextChar() == 'I' && parse_template)
+    ret->parseTemplate(s);
   return ret;
+}
+
+void Prefix::parseTemplate(State& s)
+{
+  assert(s.nextChar() == 'I');
+  this->addNode(TemplateArgs::parse(s));
 }
 }
 }

@@ -29,7 +29,13 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
 
-  static std::unique_ptr<Prefix> parse(State& s, string_type ctorname = {});
+  static std::unique_ptr<Prefix> parse(State& s,
+                                       string_type ctorname = {},
+                                       bool parse_template = true);
+  void parseTemplate(State& s);
+
+private:
+  std::unique_ptr<Node const> substition_made;
 };
 }
 }
