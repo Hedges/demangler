@@ -30,8 +30,11 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
 
+  // in_argument: Whether this function is part of an argument, or whether it
+  // is a symbol. If it is in an argument, we stop when we encounter 'E'.
   static std::unique_ptr<BareFunctionType> parse(State& s,
-                                                 bool phas_return_type);
+                                                 bool phas_return_type,
+                                                 bool in_argument = false);
 
   // Check whether the bare-function-type holds the return type of the
   // function. If it does, retrieveReturnType will return an owning pointer to

@@ -56,16 +56,23 @@ std::unique_ptr<Node> BareFunctionType::deepClone() const
 }
 
 std::unique_ptr<BareFunctionType> BareFunctionType::parse(State& s,
-                                                          bool phas_return_type)
+                                                          bool phas_return_type,
+                                                          bool in_argument)
 {
   assert(!s.empty());
   auto ret = std::make_unique<BareFunctionType>();
   if (phas_return_type)
     ret->return_type = node::Type::parse(s);
-  while (!s.empty())
+  if (!in_argument)
+    while (!s.empty())
+      ret->addNode(node::Type::parse(s));
+  else
   {
-    auto type = node::Type::parse(s);
-    ret->addNode(std::move(type));
+    while (!s.empty() && s.nextChar() != 'E')
+      ret->addNode(node::Type::parse(s));
+    if (s.empty())
+      throw std::runtime_error("Unfinished BareFunctionType");
+    s.advance(1);
   }
   ret->has_return_type = phas_return_type;
   return ret;

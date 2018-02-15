@@ -690,6 +690,23 @@ TEST_CASE("Expr-primary")
   }
 }
 
+TEST_CASE("Function argument")
+{
+  SECTION("Function pointer")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z1fPFidfE",
+      "f(int (*)(double, float))",
+      "f",
+      "f(int (*)(double, float))",
+      "f",
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+}
+
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")
 {
   for (auto i = 0u; i < ext_demangle_nsamples; ++i)

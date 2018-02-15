@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <unordered_map>
 
+#include <demangler/details/node/BareFunctionType.hh>
 #include <demangler/details/node/BuiltinType.hh>
 #include <demangler/details/node/Holder.hh>
 #include <demangler/details/node/Name.hh>
@@ -66,18 +67,24 @@ Type::Type(clone_tag, Type const& b)
 
 std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
 {
-  assert(this->getNodeCount() == 1);
+  assert(this->getNodeCount() > 0);
 
-  this->getNode(0)->print(opt, out);
-  for (auto rit = this->cv_qualifiers.rbegin();
-       rit != this->cv_qualifiers.rend();
-       ++rit)
+  if (this->getNodeCount() == 1)
   {
-    auto const qual = *rit;
-    auto const qualit = cv_qualifiers_map.find(qual);
-    if (qualit == cv_qualifiers_map.end())
-      throw std::logic_error(std::string("Invalid cv-qualifier: ") + qual);
-    out << qualit->second;
+    this->getNode(0)->print(opt, out);
+    this->printCVQualifiers(out);
+  }
+  else
+  {
+    this->getNode(0)->print(opt, out);
+    out << ' ';
+    if (!this->cv_qualifiers.empty())
+    {
+      out << '(';
+      this->printCVQualifiers(out);
+      out << ')';
+    }
+    this->getNode(1)->print(opt, out);
   }
   return out;
 }
@@ -128,6 +135,8 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
     ret->addNode(TemplateParam::parse(s));
     return ret;
   }
+  else if (s.nextChar() == 'F')
+    return parseF(s, std::move(ret));
   else
   {
     auto name = Name::parse(s, parse_template_args);
@@ -181,6 +190,13 @@ std::unique_ptr<Type> Type::parseD(State& s, std::unique_ptr<Type>&& ret)
     throw std::runtime_error("Unsupported type DF (unknown)");
   case 'v':
     throw std::runtime_error("Unsupported type Dv (unknown)");
+  case 'x': // Transaction-safe function.
+    s.advance(1);
+    if (s.empty())
+      throw std::runtime_error("Empty Dx");
+    if (s.nextChar() != 'F')
+      throw std::runtime_error("Transaction-safe type is not a function");
+    return parseF(s, std::move(ret));
   default:
     throw std::runtime_error("Unknown D code in type: " + s.toString());
   }
@@ -200,6 +216,39 @@ std::unique_ptr<Type> Type::parseDp(State& s, std::unique_ptr<Type>&& ret)
     throw std::runtime_error("Invalid symbols in Dp: " +
                              std::string(s.symbol.data()));
   return std::move(ret);
+}
+
+std::unique_ptr<Type> Type::parseF(State& s, std::unique_ptr<Type>&& ret)
+{
+  s.advance(1);
+  if (s.empty())
+    throw std::runtime_error("Empty function");
+  if (s.nextChar() == 'Y')
+  {
+    // This means extern "C", we don't care.
+    s.advance(1);
+    if (s.empty())
+      throw std::runtime_error("Empty function");
+  }
+
+  auto bft = BareFunctionType::parse(s, true, true);
+  ret->addNode(bft->retrieveReturnType());
+  ret->addNode(std::move(bft));
+  return std::move(ret);
+}
+
+void Type::printCVQualifiers(std::ostream& out) const
+{
+  for (auto rit = this->cv_qualifiers.rbegin();
+       rit != this->cv_qualifiers.rend();
+       ++rit)
+  {
+    auto const qual = *rit;
+    auto const qualit = cv_qualifiers_map.find(qual);
+    if (qualit == cv_qualifiers_map.end())
+      throw std::logic_error(std::string("Invalid cv-qualifier: ") + qual);
+    out << qualit->second;
+  }
 }
 }
 }
