@@ -106,7 +106,7 @@ void Node::dumpAST(std::ostream& out, size_t indent) const
     out << ' ' << '}';
 }
 
-Node::Node(clone_tag, Node const& b) : type{b.type}
+Node::Node(clone_tag, Node const& b) : type{b.type}, empty{b.empty}
 {
   this->children.reserve(b.children.size());
   for (auto const& child : b.children)
