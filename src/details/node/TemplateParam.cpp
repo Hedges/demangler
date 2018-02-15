@@ -1,5 +1,6 @@
 #include <demangler/details/node/TemplateParam.hh>
 
+#include <algorithm>
 #include <cassert>
 #include <limits>
 
@@ -14,13 +15,27 @@ namespace node
 TemplateParam::TemplateParam() noexcept
   : Node{Type::TemplateParam},
     substitution{nullptr},
+    original{nullptr},
     index{std::numeric_limits<unsigned int>::max()}
 {
 }
 
+// Clones are intentionally not copied when copying a node.
 TemplateParam::TemplateParam(clone_tag, TemplateParam const& b)
-  : Node{clone_tag{}, b}, substitution{b.substitution}, index{b.index}
+  : Node{clone_tag{}, b},
+    substitution{b.substitution},
+    clones{},
+    original{&b},
+    index{b.index}
 {
+}
+
+TemplateParam::~TemplateParam() noexcept
+{
+  if (this->original)
+    this->original->removeClone(this);
+  for (auto* clone : clones)
+    clone->removeOriginal();
 }
 
 std::ostream& TemplateParam::print(PrintOptions const& opt,
@@ -33,7 +48,9 @@ std::ostream& TemplateParam::print(PrintOptions const& opt,
 
 std::unique_ptr<Node> TemplateParam::deepClone() const
 {
-  return std::make_unique<TemplateParam>(clone_tag{}, *this);
+  auto clone = std::make_unique<TemplateParam>(clone_tag{}, *this);
+  this->clones.emplace_back(clone.get());
+  return clone;
 }
 
 std::unique_ptr<TemplateParam> TemplateParam::parse(State& s)
@@ -48,6 +65,7 @@ std::unique_ptr<TemplateParam> TemplateParam::parse(State& s)
   ret->index = index;
   if (!s.awaiting_template)
     ret->performSubstitution(s);
+  s.user_substitutions.emplace_back(ret.get());
   return ret;
 }
 
@@ -59,12 +77,14 @@ Node const& TemplateParam::parseParamNode(State& s)
   if (s.empty() || s.nextChar() != '_')
     throw std::runtime_error("TemplateParam does not end with '_'");
   s.advance(1);
-  return *getSubstitutedNodePtr(s, index);
+  auto& subst = *getSubstitutedNodePtr(s, index);
+  s.user_substitutions.emplace_back(&subst);
+  return subst;
 }
 
 void TemplateParam::performSubstitution(State const& s)
 {
-  this->substitution = this->getSubstitutedNodePtr(s, this->index);
+  this->assignSubstitution(this->getSubstitutedNodePtr(s, this->index));
 }
 
 Node const* TemplateParam::getSubstitutedNodePtr(State const& s,
@@ -73,6 +93,25 @@ Node const* TemplateParam::getSubstitutedNodePtr(State const& s,
   if (idx >= s.template_substitutions.size())
     throw std::runtime_error("TemplateParam with index too high");
   return s.template_substitutions[idx];
+}
+
+void TemplateParam::assignSubstitution(Node const* subst)
+{
+  this->substitution = subst;
+  for (auto* clone : clones)
+    clone->assignSubstitution(subst);
+}
+
+void TemplateParam::removeClone(TemplateParam const* clone) const
+{
+  auto it = std::find(this->clones.begin(), this->clones.end(), clone);
+  assert(it != this->clones.end());
+  this->clones.erase(it);
+}
+
+void TemplateParam::removeOriginal()
+{
+  this->original = nullptr;
 }
 }
 }

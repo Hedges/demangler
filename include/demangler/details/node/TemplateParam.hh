@@ -2,6 +2,7 @@
 #define DEMANGLER_DETAILS_NODE_TEMPLATEPARAM_HH_
 
 #include <memory>
+#include <vector>
 
 #include <demangler/details/Node.hh>
 
@@ -18,7 +19,7 @@ public:
   TemplateParam(clone_tag, TemplateParam const& b);
   TemplateParam(TemplateParam const& b) noexcept = delete;
   TemplateParam(TemplateParam&& b) noexcept = default;
-  ~TemplateParam() noexcept = default;
+  ~TemplateParam() noexcept;
 
   TemplateParam& operator=(TemplateParam const& rhs) noexcept = delete;
   TemplateParam& operator=(TemplateParam&& rhs) noexcept = default;
@@ -34,8 +35,17 @@ public:
 
 private:
   static Node const* getSubstitutedNodePtr(State const& s, std::size_t idx);
+  void assignSubstitution(Node const* subst);
+  void removeClone(TemplateParam const* clone) const;
+  void removeOriginal();
 
   Node const* substitution;
+  // We need to keep a list of clones, for when the substitution has not yet
+  // been performed. Once the substitution is performed, all cloned nodes have
+  // to be updated as well.
+  // original holds a pointer to the original node.
+  mutable std::vector<TemplateParam*> clones;
+  TemplateParam const* original;
   unsigned int index;
 };
 }
