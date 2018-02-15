@@ -48,7 +48,7 @@ OperatorName::OperatorName() noexcept
 }
 
 OperatorName::OperatorName(clone_tag, OperatorName const& b)
-  : Node{clone_tag{}, b}
+  : Node{clone_tag{}, b}, typeinfo{b.typeinfo}
 {
 }
 
