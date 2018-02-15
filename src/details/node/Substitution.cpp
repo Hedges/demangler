@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cctype>
+#include <iostream>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -180,11 +181,7 @@ std::unique_ptr<Substitution> Substitution::parse(State& s)
   {
     auto const oldsymbol = s.symbol;
     auto seqid = SeqId::parse(s);
-    if (seqid >= s.user_substitutions.size())
-      throw std::runtime_error("Invalid substitution index (got " +
-                               std::to_string(s.user_substitutions.size()) +
-                               " so far): " + s.toString());
-    ret->addNode(s.user_substitutions[seqid]->deepClone());
+    ret->addNode(s.getUserSubstitution(seqid)->deepClone());
     if (s.nextChar() != '_')
     {
       // Restore old symbol state for displaying.
@@ -195,13 +192,9 @@ std::unique_ptr<Substitution> Substitution::parse(State& s)
     s.advance(1);
     return ret;
   }
-  if (s.nextChar() == '_')
+  else if (s.nextChar() == '_')
   {
-    if (s.user_substitutions.empty())
-      throw std::runtime_error("Invalid substitution index (got " +
-                               std::to_string(s.user_substitutions.size()) +
-                               " so far): " + s.toString());
-    ret->addNode(s.user_substitutions[0]->deepClone());
+    ret->addNode(s.getUserSubstitution(0)->deepClone());
     s.advance(1);
     return ret;
   }
