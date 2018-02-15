@@ -33,6 +33,8 @@ public:
   static std::unique_ptr<ExprPrimary> parse(State& s);
 
 private:
+  static std::unique_ptr<ExprPrimary> parseAsMangledName(State& s);
+  static std::unique_ptr<ExprPrimary> parseAsIntegralType(State& s);
 };
 }
 }

@@ -674,6 +674,20 @@ TEST_CASE("Expr-primary")
     // clang-format on
     CHECK_TEST(data);
   }
+
+  SECTION("Mangled-name")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z1fIL_ZN3foo1sEEEvv",
+      "void f<foo::s>()",
+      "f<foo::s>",
+      "void f()",
+      "f",
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("Positive tests", "[.][Ext-Demangle]")

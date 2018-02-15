@@ -32,12 +32,12 @@ std::unique_ptr<Node> MangledName::deepClone() const
   return std::make_unique<MangledName>(clone_tag{}, *this);
 }
 
-std::unique_ptr<MangledName> MangledName::parse(State& s)
+std::unique_ptr<MangledName> MangledName::parse(State& s, bool in_expr)
 {
   if (!isMangled(s.symbol))
     throw std::runtime_error("Expected mangled-name: " + s.toString());
   s.advance(2);
-  auto encoding = Encoding::parse(s);
+  auto encoding = Encoding::parse(s, in_expr);
   auto ret = std::make_unique<MangledName>();
   ret->addNode(std::move(encoding));
   return ret;

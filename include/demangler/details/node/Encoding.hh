@@ -29,7 +29,8 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
 
-  static std::unique_ptr<Encoding> parse(State& s);
+  // in_expr: Whether the encoding parsing is inside an expr-primary.
+  static std::unique_ptr<Encoding> parse(State& s, bool in_expr = false);
 };
 }
 }

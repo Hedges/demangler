@@ -63,11 +63,11 @@ std::unique_ptr<Node> Encoding::deepClone() const
   return std::make_unique<Encoding>(clone_tag{}, *this);
 }
 
-std::unique_ptr<Encoding> Encoding::parse(State& s)
+std::unique_ptr<Encoding> Encoding::parse(State& s, bool in_expr)
 {
   auto ret = std::make_unique<Encoding>();
   auto name = Name::parse(s);
-  if (!s.empty())
+  if (!in_expr && !s.empty())
   {
     auto const has_return_type = nameHasReturnType(*name);
     auto bft = BareFunctionType::parse(s, has_return_type);

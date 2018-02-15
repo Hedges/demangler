@@ -34,7 +34,8 @@ public:
     return symbol.size() > 2 && symbol[0] == '_' && symbol[1] == 'Z';
   }
 
-  static std::unique_ptr<MangledName> parse(State& s);
+  // in_expr: Whether the encoding parsing is inside an expr-primary.
+  static std::unique_ptr<MangledName> parse(State& s, bool in_expr = false);
 };
 }
 }
