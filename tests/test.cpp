@@ -425,6 +425,34 @@ TEST_CASE("Substitutions")
     // clang-format on
     CHECK_TEST(data);
   }
+
+  SECTION("Template param substitution")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3barI6StructEvT_S1_",
+      "void bar<Struct>(Struct, Struct)",
+      "bar<Struct>",
+      "void bar(Struct, Struct)",
+      "bar"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
+
+  SECTION("Empty parameter pack substitution")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_Z3fooI6StructJEEvDpT0_T_S3_",
+      "void foo<Struct>(Struct, Struct)",
+      "foo<Struct>",
+      "void foo(Struct, Struct)",
+      "foo"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("User-defined types")

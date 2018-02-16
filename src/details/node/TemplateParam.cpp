@@ -65,7 +65,7 @@ std::unique_ptr<TemplateParam> TemplateParam::parse(State& s)
   ret->index = index;
   if (!s.awaiting_template)
     ret->performSubstitution(s);
-  s.user_substitutions.emplace_back(ret.get());
+  s.registerUserSubstitution(ret.get());
   return ret;
 }
 
@@ -78,7 +78,6 @@ Node const& TemplateParam::parseParamNode(State& s)
     throw std::runtime_error("TemplateParam does not end with '_'");
   s.advance(1);
   auto& subst = *getSubstitutedNodePtr(s, index);
-  s.user_substitutions.emplace_back(&subst);
   return subst;
 }
 

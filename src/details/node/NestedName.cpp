@@ -59,9 +59,18 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   auto lastnode = std::unique_ptr<Prefix>{nullptr};
   auto prefixnode = std::make_unique<Prefix>();
 
-  lastnode = Prefix::parse(s);
-  ret->substitutions_made.emplace_back(lastnode->deepClone());
-  s.user_substitutions.emplace_back(ret->substitutions_made.back().get());
+  lastnode = Prefix::parse(s, {}, false);
+  if (lastnode->getNode(0)->getType() != Type::Substitution)
+  {
+    ret->substitutions_made.emplace_back(lastnode->deepClone());
+    s.user_substitutions.emplace_back(ret->substitutions_made.back().get());
+  }
+  if (!s.empty() && s.nextChar() == 'I')
+  {
+    lastnode->parseTemplate(s);
+    ret->substitutions_made.emplace_back(lastnode->deepClone());
+    s.user_substitutions.emplace_back(ret->substitutions_made.back().get());
+  }
 
   while (!s.empty() && s.nextChar() != 'E')
   {

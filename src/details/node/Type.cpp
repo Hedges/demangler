@@ -67,9 +67,9 @@ Type::Type(clone_tag, Type const& b)
 
 std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
 {
-  assert(this->getNodeCount() > 0);
-
-  if (this->getNodeCount() == 1)
+  if (this->getNodeCount() == 0)
+    out << "<empty parameter pack>";
+  else if (this->getNodeCount() == 1)
   {
     this->getNode(0)->print(opt, out);
     this->printCVQualifiers(out);
@@ -223,6 +223,7 @@ std::unique_ptr<Type> Type::parseDp(State& s, std::unique_ptr<Type>&& ret)
       ret->addNode(std::make_unique<Holder>(packnode));
     else
       ret->setEmpty(true);
+    s.registerUserSubstitution(ret.get());
   }
   else
     throw std::runtime_error("Invalid symbols in Dp: " +
