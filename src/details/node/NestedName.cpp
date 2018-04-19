@@ -4,6 +4,7 @@
 #include <cctype>
 #include <stdexcept>
 
+#include <demangler/details/CVQualifiers.hh>
 #include <demangler/details/Utils.hh>
 #include <demangler/details/node/Prefix.hh>
 #include <demangler/details/node/SourceName.hh>
@@ -50,6 +51,11 @@ std::unique_ptr<Node> NestedName::deepClone() const
   return std::make_unique<NestedName>(clone_tag{}, *this);
 }
 
+gsl::cstring_span<> NestedName::getCVQuals() const noexcept
+{
+  return this->cvquals;
+}
+
 std::unique_ptr<NestedName> NestedName::parse(State& s)
 {
   assert(s.nextChar() == 'N');
@@ -59,6 +65,7 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   auto lastnode = std::unique_ptr<Prefix>{nullptr};
   auto prefixnode = std::make_unique<Prefix>();
 
+  ret->cvquals = parseCVQualifiers(s);
   lastnode = Prefix::parse(s, {}, false);
   if (lastnode->getNode(0)->getType() != Type::Substitution)
   {

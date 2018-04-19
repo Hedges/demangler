@@ -3,6 +3,7 @@
 #include <cassert>
 #include <stdexcept>
 
+#include <demangler/details/CVQualifiers.hh>
 #include <demangler/details/Utils.hh>
 #include <demangler/details/node/BareFunctionType.hh>
 #include <demangler/details/node/Name.hh>
@@ -32,16 +33,28 @@ Encoding::Encoding(clone_tag, Encoding const& b) : Node{clone_tag{}, b}
 std::ostream& Encoding::print(PrintOptions const& opt, std::ostream& out) const
 {
   assert(this->getNodeCount() != 0);
+  auto const printCVQuals = [&](size_t node_index, char const* prefix = "") {
+    auto const cvquals =
+        static_cast<Name const&>(*this->getNode(node_index)).getCVQuals();
+    if (!cvquals.empty())
+    {
+      out << prefix << ' ';
+      printCVQualifiers(out, cvquals);
+    }
+  };
+
   switch (this->getNodeCount())
   {
     // 1 node -> Name
     case 1:
       this->getNode(0)->print(opt, out);
+      printCVQuals(0);
       break;
     // 2 nodes -> Name + Args (function)
     case 2:
       this->getNode(0)->print(opt, out);
       this->getNode(1)->print(opt, out);
+      printCVQuals(0, opt.add_parameters ? "" : "()");
       break;
     // 3 nodes -> Return type + Name + Args (function)
     case 3:
@@ -52,6 +65,7 @@ std::ostream& Encoding::print(PrintOptions const& opt, std::ostream& out) const
       }
       this->getNode(1)->print(opt, out);
       this->getNode(2)->print(opt, out);
+      printCVQuals(1, opt.add_parameters ? "" : "()");
       break;
     // No other possible case.
   }

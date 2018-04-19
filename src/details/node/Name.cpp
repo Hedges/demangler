@@ -39,6 +39,18 @@ std::unique_ptr<Node> Name::deepClone() const
   return std::make_unique<Name>(clone_tag{}, *this);
 }
 
+gsl::cstring_span<> Name::getCVQuals() const noexcept
+{
+  assert(this->getNodeCount() > 0);
+  auto const& firstnode = *this->getNode(0);
+  if (firstnode.getType() == Type::NestedName)
+  {
+    auto const& nested_node = static_cast<NestedName const&>(firstnode);
+    return nested_node.getCVQuals();
+  }
+  return "";
+}
+
 std::unique_ptr<Name> Name::parse(State& s, bool parse_template_args)
 {
   auto ret = std::make_unique<Name>();

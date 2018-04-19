@@ -28,6 +28,7 @@ public:
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
+  gsl::cstring_span<> getCVQuals() const noexcept;
 
   // parse_template_args: Whether Name should eat the template-args if it
   // encounters one (`I...E`).

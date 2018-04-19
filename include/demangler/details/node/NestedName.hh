@@ -28,6 +28,7 @@ public:
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
+  gsl::cstring_span<> getCVQuals() const noexcept;
 
   static std::unique_ptr<NestedName> parse(State& s);
 
@@ -41,6 +42,7 @@ private:
   // only a::b::c::d is kept.
   // This holds owning pointers to what will later be used for substitutions.
   std::vector<std::unique_ptr<Node>> substitutions_made;
+  gsl::cstring_span<> cvquals;
 };
 }
 }
