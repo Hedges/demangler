@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include <demangler/details/Utils.hh>
+#include <demangler/details/node/LocalName.hh>
 #include <demangler/details/node/NestedName.hh>
 #include <demangler/details/node/Substitution.hh>
 #include <demangler/details/node/TemplateArgs.hh>
@@ -53,6 +54,8 @@ std::unique_ptr<Name> Name::parse(State& s, bool parse_template_args)
     else
       ret->addNode(Substitution::parse(s));
   }
+  else if (s.nextChar() == 'Z')
+    ret->addNode(LocalName::parse(s));
   else
     ret->addNode(UnqualifiedName::parse(s));
   if (!s.empty() && s.nextChar() == 'I' && parse_template_args)

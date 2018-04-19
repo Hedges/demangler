@@ -64,7 +64,7 @@ std::unique_ptr<BareFunctionType> BareFunctionType::parse(State& s,
   if (phas_return_type)
     ret->return_type = node::Type::parse(s);
   if (!in_argument)
-    while (!s.empty())
+    while (!s.empty() && s.nextChar() != 'E')
       ret->addNode(node::Type::parse(s));
   else
   {

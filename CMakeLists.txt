@@ -30,6 +30,7 @@ set(SRCS
   src/details/node/Encoding.cpp
   src/details/node/ExprPrimary.cpp
   src/details/node/Holder.cpp
+  src/details/node/LocalName.cpp
   src/details/node/MangledName.cpp
   src/details/node/Name.cpp
   src/details/node/NestedName.cpp

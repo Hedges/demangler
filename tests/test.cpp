@@ -49,8 +49,8 @@ static TestData const ext_demangle_samples[] = {
   },
   {
     "_ZZNK1CI1DIcSt1EIcESaIcEEJEE1FEvE1F",
-    "C<D<char, std::E<char>, std::allocator<char> > >::F() const::F",
-    "C<D<char, std::E<char>, std::allocator<char> > >::F() const::F",
+    "C<D<char, std::E<char>, std::allocator<char>>>::F() const::F",
+    "C<D<char, std::E<char>, std::allocator<char>>>::F() const::F",
     "C::F() const::F",
     "C::F() const::F",
   },

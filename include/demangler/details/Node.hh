@@ -26,6 +26,7 @@ public:
     Constructor,
     Encoding,
     ExprPrimary,
+    LocalName,
     MangledName,
     Name,
     NestedName,
