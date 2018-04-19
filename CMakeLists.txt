@@ -21,6 +21,7 @@ include_directories(
 #sources files
 set(SRCS
   src/demangler.cpp
+  src/details/CVQualifiers.cpp
   src/details/node/BareFunctionType.cpp
   src/details/node/BuiltinSubstitution.cpp
   src/details/node/BuiltinType.cpp
