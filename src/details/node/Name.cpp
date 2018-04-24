@@ -72,7 +72,8 @@ std::unique_ptr<Name> Name::parse(State& s, bool parse_template_args)
     ret->addNode(UnqualifiedName::parse(s));
   if (!s.empty() && s.nextChar() == 'I' && parse_template_args)
   {
-    if (ret->getNode(0)->getType() == Type::UnqualifiedName)
+    if (ret->getNode(0)->getType() == Type::UnqualifiedName ||
+        ret->getNode(0)->getType() == Type::UnscopedName)
       s.registerUserSubstitution(ret->getNode(0));
     ret->addNode(TemplateArgs::parse(s));
   }
