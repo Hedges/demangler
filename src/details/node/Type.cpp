@@ -46,7 +46,7 @@ auto const builtin_D_type = std::unordered_map<char, std::string>{
     {'s', "char16_t"},
 };
 
-auto const cv_qualifiers_map = std::unordered_map<char, std::string>{
+auto const cvr_qualifiers_map = std::unordered_map<char, std::string>{
     {'K', " const"},
     {'O', "&&"},
     {'P', "*"},
@@ -54,6 +54,15 @@ auto const cv_qualifiers_map = std::unordered_map<char, std::string>{
     {'V', " volatile"},
     {'r', " restrict"},
 };
+
+gsl::cstring_span<> extractCVRefQualifiers(State& s)
+{
+  auto const* begin_cvrptr = s.symbol.data();
+
+  while (!s.empty() && cvr_qualifiers_map.find(s.nextChar()) != cvr_qualifiers_map.end())
+    s.advance(1);
+  return {begin_cvrptr, (s.symbol.data() - begin_cvrptr)};
+}
 }
 
 Type::Type() noexcept : Node{Node::Type::Type}
@@ -61,7 +70,7 @@ Type::Type() noexcept : Node{Node::Type::Type}
 }
 
 Type::Type(clone_tag, Type const& b)
-  : Node{clone_tag{}, b}, cv_qualifiers{b.cv_qualifiers}
+  : Node{clone_tag{}, b}, cvref_qualifiers{b.cvref_qualifiers}
 {
 }
 
@@ -72,16 +81,16 @@ std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
   else if (this->getNodeCount() == 1)
   {
     this->getNode(0)->print(opt, out);
-    this->printCVQualifiers(out);
+    this->printCVRefQualifiers(out);
   }
   else
   {
     this->getNode(0)->print(opt, out);
     out << ' ';
-    if (!this->cv_qualifiers.empty())
+    if (!this->cvref_qualifiers.empty())
     {
       out << '(';
-      this->printCVQualifiers(out);
+      this->printCVRefQualifiers(out);
       out << ')';
     }
     this->getNode(1)->print(opt, out);
@@ -99,12 +108,7 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
   auto ret = std::make_unique<Type>();
   auto generates_substitution = true;
 
-  while (!s.empty() &&
-         cv_qualifiers_map.find(s.nextChar()) != cv_qualifiers_map.end())
-  {
-    ret->cv_qualifiers += s.nextChar();
-    s.advance(1);
-  }
+  ret->cvref_qualifiers = extractCVRefQualifiers(s);
   if (s.empty())
     throw std::runtime_error("Unfinished Type");
   auto it = builtin_types_map.find(s.nextChar());
@@ -146,13 +150,13 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
   }
   if (generates_substitution)
   {
-    if (!ret->cv_qualifiers.empty())
+    if (!ret->cvref_qualifiers.empty())
     {
-      auto tmp = std::string{std::move(ret->cv_qualifiers)};
-      ret->cv_qualifiers.clear();
+      auto tmp = ret->cvref_qualifiers;
+      ret->cvref_qualifiers = {};
       ret->substitution_made = ret->deepClone();
       s.user_substitutions.emplace_back(ret->substitution_made.get());
-      ret->cv_qualifiers = std::move(tmp);
+      ret->cvref_qualifiers = tmp;
     }
     s.user_substitutions.emplace_back(ret.get());
   }
@@ -167,9 +171,10 @@ bool Type::isIntegral() const noexcept
   };
 
   // Pointers and references are integrals.
-  if (contains(this->cv_qualifiers, 'P') ||
-      contains(this->cv_qualifiers, 'K') ||
-      contains(this->cv_qualifiers, 'R') || contains(this->cv_qualifiers, 'O'))
+  if (contains(this->cvref_qualifiers, 'P') ||
+      contains(this->cvref_qualifiers, 'K') ||
+      contains(this->cvref_qualifiers, 'R') ||
+      contains(this->cvref_qualifiers, 'O'))
     return true;
   auto const& node = *this->getNode(0);
   if (node.getType() == Node::Type::BuiltinType)
@@ -250,15 +255,15 @@ std::unique_ptr<Type> Type::parseF(State& s, std::unique_ptr<Type>&& ret)
   return std::move(ret);
 }
 
-void Type::printCVQualifiers(std::ostream& out) const
+void Type::printCVRefQualifiers(std::ostream& out) const
 {
-  for (auto rit = this->cv_qualifiers.rbegin();
-       rit != this->cv_qualifiers.rend();
+  for (auto rit = this->cvref_qualifiers.rbegin();
+       rit != this->cvref_qualifiers.rend();
        ++rit)
   {
     auto const qual = *rit;
-    auto const qualit = cv_qualifiers_map.find(qual);
-    if (qualit == cv_qualifiers_map.end())
+    auto const qualit = cvr_qualifiers_map.find(qual);
+    if (qualit == cvr_qualifiers_map.end())
       throw std::logic_error(std::string("Invalid cv-qualifier: ") + qual);
     out << qualit->second;
   }

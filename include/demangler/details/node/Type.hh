@@ -41,9 +41,9 @@ private:
   static std::unique_ptr<Type> parseDp(State& s, std::unique_ptr<Type>&& ret);
   static std::unique_ptr<Type> parseF(State& s, std::unique_ptr<Type>&& ret);
 
-  void printCVQualifiers(std::ostream& out) const;
+  void printCVRefQualifiers(std::ostream& out) const;
 
-  std::string cv_qualifiers;
+  gsl::cstring_span<> cvref_qualifiers;
   std::unique_ptr<Node> substitution_made;
 };
 }
