@@ -29,6 +29,7 @@ public:
   std::unique_ptr<Node> deepClone() const override final;
 
   static std::unique_ptr<OperatorName> parse(State& s);
+  bool isCastOperator() const noexcept;
 
 private:
   enum class OperatorType

@@ -56,6 +56,13 @@ gsl::cstring_span<> NestedName::getCVQuals() const noexcept
   return this->cvquals;
 }
 
+bool NestedName::willHaveReturnType() const noexcept
+{
+  assert(this->getNodeCount() == 2 &&
+         this->getNode(1)->getType() == Node::Type::Prefix);
+  return static_cast<Prefix const*>(this->getNode(1))->willHaveReturnType();
+}
+
 std::unique_ptr<NestedName> NestedName::parse(State& s)
 {
   assert(s.nextChar() == 'N');

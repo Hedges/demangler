@@ -33,6 +33,7 @@ public:
                                        string_type ctorname = {},
                                        bool parse_template = true);
   void parseTemplate(State& s);
+  bool willHaveReturnType() const noexcept;
 
 private:
   std::unique_ptr<Node const> substition_made;

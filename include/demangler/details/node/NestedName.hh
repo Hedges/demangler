@@ -29,6 +29,7 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
   gsl::cstring_span<> getCVQuals() const noexcept;
+  bool willHaveReturnType() const noexcept;
 
   static std::unique_ptr<NestedName> parse(State& s);
 

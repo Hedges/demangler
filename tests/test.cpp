@@ -505,6 +505,20 @@ TEST_CASE("Template")
     // clang-format on
     CHECK_TEST(data);
   }
+
+  SECTION("Template with nested name")
+  {
+    // clang-format off
+    auto const data = TestData{
+      "_ZN3foo1fIiEEvd",
+      "void foo::f<int>(double)",
+      "foo::f<int>",
+      "void foo::f(double)",
+      "foo::f"
+    };
+    // clang-format on
+    CHECK_TEST(data);
+  }
 }
 
 TEST_CASE("Argument packs")

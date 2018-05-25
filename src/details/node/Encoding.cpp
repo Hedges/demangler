@@ -7,6 +7,7 @@
 #include <demangler/details/Utils.hh>
 #include <demangler/details/node/BareFunctionType.hh>
 #include <demangler/details/node/Name.hh>
+#include <demangler/details/node/NestedName.hh>
 
 namespace demangler
 {
@@ -19,7 +20,9 @@ namespace
 bool nameHasReturnType(Name const& name)
 {
   auto const& lastnode = *name.getNode(name.getNodeCount() - 1);
-  return lastnode.getType() == Node::Type::TemplateArgs;
+  return lastnode.getType() == Node::Type::TemplateArgs ||
+         (lastnode.getType() == Node::Type::NestedName &&
+          static_cast<NestedName const&>(lastnode).willHaveReturnType());
 }
 }
 Encoding::Encoding() noexcept : Node{Type::Encoding}

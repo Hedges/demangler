@@ -86,6 +86,11 @@ std::unique_ptr<OperatorName> OperatorName::parse(State& s)
   return ret;
 }
 
+bool OperatorName::isCastOperator() const noexcept
+{
+  return this->typeinfo->operator_type == OperatorType::cv;
+}
+
 OperatorName::OperatorTypeInfo const* OperatorName::findOperatorTypeInfo(
     State& s)
 {
