@@ -41,7 +41,7 @@ std::unique_ptr<SourceName> SourceName::parse(State& s)
   if (!std::isdigit(s.symbol[0]))
     throw std::runtime_error("Expected number for source-name: " +
                              s.toString());
-  auto length = 0u;
+  auto length = 0;
   auto i = 0;
   while (i < s.symbol.size() && std::isdigit(s.symbol[i]))
   {
@@ -52,7 +52,7 @@ std::unique_ptr<SourceName> SourceName::parse(State& s)
     throw std::runtime_error("source-name does not fit: " + s.toString());
   auto ret = std::make_unique<SourceName>();
   ret->name = s.symbol.subspan(i, length);
-  s.advance(i + length);
+  s.advance(static_cast<unsigned int>(i + length));
   return ret;
 }
 

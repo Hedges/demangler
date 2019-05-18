@@ -26,7 +26,7 @@ unsigned int parseDiscriminator(State& s)
   {
     if (!std::isdigit(s.nextChar()))
       throw std::runtime_error("Invalid single-digit discriminator.");
-    auto const ret = (unsigned int)(s.nextChar() - '0' + 2);
+    auto const ret = static_cast<unsigned int>(s.nextChar() - '0' + 2);
     s.advance(1);
     return ret;
   }
@@ -44,7 +44,7 @@ unsigned int parseDiscriminator(State& s)
     if (s.empty() || s.nextChar() != '_')
       throw std::runtime_error("Invalid multi-digits discriminator.");
     s.advance(1);
-    return ret;
+    return static_cast<unsigned int>(ret);
   }
 }
 }

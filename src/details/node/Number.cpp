@@ -50,7 +50,7 @@ std::unique_ptr<Number> Number::parse(State& s)
     throw std::runtime_error("Invalid <number>");
 
   auto num = int64_t{0};
-  auto i = 0;
+  auto i = 0u;
 
   while (it != digits.end())
   {

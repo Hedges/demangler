@@ -8,10 +8,22 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
 
 option(DEMANGLER_BUILD_EXECUTABLE "Build a command-line executable to demangle" ON)
 option(DEMANGLER_BUILD_TESTS "Build the demangler tests" ON)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wshadow -ggdb3")
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(WARNING_FLAGS
+  -Wall
+  -Wextra
+  -Wshadow
+  -Wnon-virtual-dtor
+  -pedantic
+  -Wold-style-cast
+  -Wcast-align
+  -Wunused
+  -Woverloaded-virtual
+  -Wpedantic
+  -Wconversion
+  -Wsign-conversion
+  -Wdouble-promotion
+  -Wformat=2
+)
 
 #includes directories
 include_directories(
@@ -54,6 +66,9 @@ set(SRCS
 
 #binaries
 add_library(demangler ${SRCS})
+target_compile_options(demangler PRIVATE ${WARNING_FLAGS} -ggdb3)
+set_property(TARGET demangler PROPERTY CXX_STANDARD 17)
+set_property(TARGET demangler PROPERTY CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (DEMANGLER_BUILD_EXECUTABLE)
   add_executable(demangler_cli src/main.cpp)
