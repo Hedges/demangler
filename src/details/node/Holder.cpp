@@ -23,6 +23,11 @@ std::unique_ptr<Node> Holder::deepClone() const
 {
   return std::make_unique<Holder>(clone_tag{}, *this);
 }
+
+Node const& Holder::getHeld() const noexcept
+{
+  return this->held;
+}
 }
 }
 }

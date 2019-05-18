@@ -29,6 +29,7 @@ public:
   std::ostream& print(PrintOptions const& opt,
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
+  Node const& getHeld() const noexcept;
 
 private:
   std::reference_wrapper<Node const> held;

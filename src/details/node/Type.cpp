@@ -59,9 +59,31 @@ gsl::cstring_span<> extractCVRefQualifiers(State& s)
 {
   auto const* begin_cvrptr = s.symbol.data();
 
-  while (!s.empty() && cvr_qualifiers_map.find(s.nextChar()) != cvr_qualifiers_map.end())
+  while (!s.empty() &&
+         cvr_qualifiers_map.find(s.nextChar()) != cvr_qualifiers_map.end())
     s.advance(1);
   return {begin_cvrptr, (s.symbol.data() - begin_cvrptr)};
+}
+
+std::string collapseCVRefQualifiers(gsl::cstring_span<> lcvref,
+                                            gsl::cstring_span<> rcvref) noexcept
+{
+  if (lcvref[0] == 'R' && rcvref[0] == 'L')
+    return gsl::to_string(rcvref);
+  return gsl::to_string(lcvref);
+}
+
+void printCVRefQualifiers(std::ostream& out, gsl::cstring_span<> cvref_qualifiers)
+{
+  for (auto rit = cvref_qualifiers.rbegin(); rit != cvref_qualifiers.rend();
+       ++rit)
+  {
+    auto const qual = *rit;
+    auto const qualit = cvr_qualifiers_map.find(qual);
+    if (qualit == cvr_qualifiers_map.end())
+      throw std::logic_error(std::string("Invalid cv-qualifier: ") + qual);
+    out << qualit->second;
+  }
 }
 }
 
@@ -74,28 +96,41 @@ Type::Type(clone_tag, Type const& b)
 {
 }
 
-std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
+std::ostream& Type::print(PrintOptions const& opt,
+                          std::ostream& out,
+                          bool print_cvr) const
 {
   if (this->getNodeCount() == 0)
     out << "<empty parameter pack>";
   else if (this->getNodeCount() == 1)
   {
-    this->getNode(0)->print(opt, out);
-    this->printCVRefQualifiers(out);
+    if (!this->is_dp)
+    {
+      this->getNode(0)->print(opt, out);
+      if (print_cvr)
+        printCVRefQualifiers(out, this->cvref_qualifiers);
+    }
+    else
+      this->printDpNode(opt, out);
   }
   else
   {
     this->getNode(0)->print(opt, out);
     out << ' ';
-    if (!this->cvref_qualifiers.empty())
+    if (!this->cvref_qualifiers.empty() && print_cvr)
     {
       out << '(';
-      this->printCVRefQualifiers(out);
+      printCVRefQualifiers(out, this->cvref_qualifiers);
       out << ')';
     }
     this->getNode(1)->print(opt, out);
   }
   return out;
+}
+
+std::ostream& Type::print(PrintOptions const& opt, std::ostream& out) const
+{
+  return this->print(opt, out, true);
 }
 
 std::unique_ptr<Node> Type::deepClone() const
@@ -182,6 +217,11 @@ bool Type::isIntegral() const noexcept
   return false;
 }
 
+gsl::cstring_span<> Type::getCVRefQualifiers() const noexcept
+{
+  return this->cvref_qualifiers;
+}
+
 std::unique_ptr<Type> Type::parseD(State& s, std::unique_ptr<Type>&& ret)
 {
   auto const it = builtin_D_type.find(s.nextChar());
@@ -221,8 +261,10 @@ std::unique_ptr<Type> Type::parseD(State& s, std::unique_ptr<Type>&& ret)
 
 std::unique_ptr<Type> Type::parseDp(State& s, std::unique_ptr<Type>&& ret)
 {
+  ret->cvref_qualifiers = extractCVRefQualifiers(s);
   if (s.nextChar() == 'T')
   {
+    // This node is of type TemplateArg.
     auto const& packnode = TemplateParam::parseParamNode(s);
     if (packnode.getNodeCount() > 0)
       ret->addNode(std::make_unique<Holder>(packnode));
@@ -233,6 +275,7 @@ std::unique_ptr<Type> Type::parseDp(State& s, std::unique_ptr<Type>&& ret)
   else
     throw std::runtime_error("Invalid symbols in Dp: " +
                              std::string(s.symbol.data()));
+  ret->is_dp = true;
   return std::move(ret);
 }
 
@@ -255,17 +298,25 @@ std::unique_ptr<Type> Type::parseF(State& s, std::unique_ptr<Type>&& ret)
   return std::move(ret);
 }
 
-void Type::printCVRefQualifiers(std::ostream& out) const
+void Type::printDpNode(PrintOptions const& opt, std::ostream& out) const
 {
-  for (auto rit = this->cvref_qualifiers.rbegin();
-       rit != this->cvref_qualifiers.rend();
-       ++rit)
+  auto const* holder = static_cast<Holder const*>(this->getNode(0));
+  auto const& template_arg = holder->getHeld();
+  for (auto i = std::size_t{0}; i < template_arg.getNodeCount(); ++i)
   {
-    auto const qual = *rit;
-    auto const qualit = cvr_qualifiers_map.find(qual);
-    if (qualit == cvr_qualifiers_map.end())
-      throw std::logic_error(std::string("Invalid cv-qualifier: ") + qual);
-    out << qualit->second;
+    if (i > 0)
+      out << ',' << ' ';
+    auto const* targ_node = template_arg.getNode(i);
+    if (targ_node->getType() != Node::Type::Type)
+      targ_node->print(opt, out);
+    else
+    {
+      auto const* typenode = static_cast<Type const*>(targ_node);
+      typenode->print(opt, out, false);
+      printCVRefQualifiers(out,
+                           collapseCVRefQualifiers(this->cvref_qualifiers,
+                                                   typenode->cvref_qualifiers));
+    }
   }
 }
 }
