@@ -70,8 +70,8 @@ static TestData const ext_demangle_samples[] = {
   },
   {
     "_ZN1CILj50ELb1EE1DEv",
-    "C<50u, true>::D()",
-    "C<50u, true>::D",
+    "C<(unsigned int)50, true>::D()",
+    "C<(unsigned int)50, true>::D",
     "C::D()",
     "C::D",
   },
