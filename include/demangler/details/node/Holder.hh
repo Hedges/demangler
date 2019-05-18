@@ -19,11 +19,11 @@ class Holder : public Node
 public:
   explicit Holder(Node const& pheld) noexcept;
   Holder(clone_tag, Holder const& b);
-  Holder(Holder const& b) noexcept = default;
+  Holder(Holder const& b) noexcept = delete;
   Holder(Holder&& b) noexcept = default;
-  ~Holder() noexcept = default;
+  ~Holder() noexcept override = default;
 
-  Holder& operator=(Holder const& rhs) noexcept = default;
+  Holder& operator=(Holder const& rhs) noexcept = delete;
   Holder& operator=(Holder&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,

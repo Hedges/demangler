@@ -45,7 +45,7 @@ gsl::cstring_span<> BuiltinType::getMangledName() const noexcept
   return this->mangled;
 }
 
-bool BuiltinType::isIntegral() const noexcept
+bool BuiltinType::isIntegral() const
 {
   using namespace span_literals;
   if (this->mangled.size() == 1)

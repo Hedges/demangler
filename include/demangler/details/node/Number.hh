@@ -17,11 +17,11 @@ class Number : public Node
 public:
   Number() noexcept;
   Number(clone_tag, Number const& b);
-  Number(Number const& b) noexcept = default;
+  Number(Number const& b) noexcept = delete;
   Number(Number&& b) noexcept = default;
-  ~Number() noexcept = default;
+  ~Number() noexcept override = default;
 
-  Number& operator=(Number const& rhs) noexcept = default;
+  Number& operator=(Number const& rhs) noexcept = delete;
   Number& operator=(Number&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,

@@ -17,11 +17,11 @@ class BuiltinSubstitution : public Node
 {
 public:
   explicit BuiltinSubstitution(gsl::cstring_span<> subst) noexcept;
-  BuiltinSubstitution(BuiltinSubstitution const& b) = default;
+  BuiltinSubstitution(BuiltinSubstitution const& b) = delete;
   BuiltinSubstitution(BuiltinSubstitution&& b) noexcept = default;
-  ~BuiltinSubstitution() noexcept = default;
+  ~BuiltinSubstitution() noexcept override = default;
 
-  BuiltinSubstitution& operator=(BuiltinSubstitution const& rhs) = default;
+  BuiltinSubstitution& operator=(BuiltinSubstitution const& rhs) = delete;
   BuiltinSubstitution& operator=(BuiltinSubstitution&& rhs) noexcept = default;
 
   std::ostream& print(PrintOptions const& opt,

@@ -21,7 +21,7 @@ public:
   BuiltinType(clone_tag, BuiltinType const& b);
   BuiltinType(BuiltinType const& b) noexcept = delete;
   BuiltinType(BuiltinType&& b) noexcept = default;
-  ~BuiltinType() noexcept = default;
+  ~BuiltinType() noexcept override = default;
 
   BuiltinType& operator=(BuiltinType const& rhs) noexcept = delete;
   BuiltinType& operator=(BuiltinType&& rhs) noexcept = default;
@@ -31,7 +31,7 @@ public:
   std::unique_ptr<Node> deepClone() const override final;
   gsl::cstring_span<> getTypeName() const noexcept;
   gsl::cstring_span<> getMangledName() const noexcept;
-  bool isIntegral() const noexcept;
+  bool isIntegral() const;
 
 private:
   gsl::cstring_span<> mangled;
