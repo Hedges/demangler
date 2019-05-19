@@ -13,34 +13,61 @@ namespace details
 namespace node
 {
 // TODO(sabour_f): Should be changed for a more appropriate data structure.
-std::array<OperatorName::OperatorTypeInfo,
-           OperatorName::nb_operators> const OperatorName::operator_typemap = {{
-    {OperatorType::nw, "new", "nw"},    {OperatorType::na, "new[]", "na"},
-    {OperatorType::dl, "delete", "dl"}, {OperatorType::da, "delete[]", "da"},
-    {OperatorType::ps, "+", "ps"},      {OperatorType::ng, "-", "ng"},
-    {OperatorType::ad, "&", "ad"},      {OperatorType::de, "*", "de"},
-    {OperatorType::co, "~", "co"},      {OperatorType::pl, "+", "pl"},
-    {OperatorType::mi, "-", "mi"},      {OperatorType::ml, "*", "ml"},
-    {OperatorType::dv, "/", "dv"},      {OperatorType::rm, "%", "rm"},
-    {OperatorType::an, "&", "an"},      {OperatorType::or_, "|", "or"},
-    {OperatorType::eo, "^", "eo"},      {OperatorType::aS, "=", "aS"},
-    {OperatorType::pL, "+=", "pL"},     {OperatorType::mI, "-=", "mI"},
-    {OperatorType::mL, "*=", "mL"},     {OperatorType::dV, "/=", "dV"},
-    {OperatorType::rM, "%=", "rM"},     {OperatorType::aM, "&=", "aM"},
-    {OperatorType::oR, "|=", "oR"},     {OperatorType::eO, "^=", "eO"},
-    {OperatorType::ls, "<<", "ls"},     {OperatorType::rs, ">>", "rs"},
-    {OperatorType::lS, "<<=", "lS"},    {OperatorType::rS, ">>=", "rS"},
-    {OperatorType::eq, "==", "eq"},     {OperatorType::ne, "!-", "ne"},
-    {OperatorType::lt, "<", "lt"},      {OperatorType::gt, ">", "gt"},
-    {OperatorType::le, "<=", "le"},     {OperatorType::ge, ">=", "ge"},
-    {OperatorType::nt, "!", "nt"},      {OperatorType::aa, "&&", "aa"},
-    {OperatorType::oo, "||", "oo"},     {OperatorType::pp, "++", "pp"},
-    {OperatorType::mm, "--", "mm"},     {OperatorType::cm, ",", "cm"},
-    {OperatorType::pm, "->*", "pm"},    {OperatorType::pt, "->", "pt"},
-    {OperatorType::cl, "()", "cl"},     {OperatorType::ix, "[]", "ix"},
-    {OperatorType::qu, "?", "qu"},      {OperatorType::cv, "", "cv"},
-    {OperatorType::li, "", "li"},       {OperatorType::v, "", "v"},
-}};
+std::array<OperatorName::OperatorTypeInfo, OperatorName::nb_operators> const
+    OperatorName::operator_typemap = {{
+// clang-format off
+        {OperatorType::nw,  OperatorArity::Unknown, "new",      "nw"},
+        {OperatorType::na,  OperatorArity::Unknown, "new[]",    "na"},
+        {OperatorType::dl,  OperatorArity::Unknown, "delete",   "dl"},
+        {OperatorType::da,  OperatorArity::Unknown, "delete[]", "da"},
+        {OperatorType::ps,  OperatorArity::Unary,   "+",        "ps"},
+        {OperatorType::ng,  OperatorArity::Unary,   "-",        "ng"},
+        {OperatorType::ad,  OperatorArity::Unary,   "&",        "ad"},
+        {OperatorType::de,  OperatorArity::Unary,   "*",        "de"},
+        {OperatorType::co,  OperatorArity::Unary,   "~",        "co"},
+        {OperatorType::pl,  OperatorArity::Binary,  "+",        "pl"},
+        {OperatorType::mi,  OperatorArity::Binary,  "-",        "mi"},
+        {OperatorType::ml,  OperatorArity::Binary,  "*",        "ml"},
+        {OperatorType::dv,  OperatorArity::Binary,  "/",        "dv"},
+        {OperatorType::rm,  OperatorArity::Binary,  "%",        "rm"},
+        {OperatorType::an,  OperatorArity::Binary,  "&",        "an"},
+        {OperatorType::or_, OperatorArity::Binary,  "|",        "or"},
+        {OperatorType::eo,  OperatorArity::Binary,  "^",        "eo"},
+        {OperatorType::aS,  OperatorArity::Binary,  "=",        "aS"},
+        {OperatorType::pL,  OperatorArity::Binary,  "+=",       "pL"},
+        {OperatorType::mI,  OperatorArity::Binary,  "-=",       "mI"},
+        {OperatorType::mL,  OperatorArity::Binary,  "*=",       "mL"},
+        {OperatorType::dV,  OperatorArity::Binary,  "/=",       "dV"},
+        {OperatorType::rM,  OperatorArity::Binary,  "%=",       "rM"},
+        {OperatorType::aM,  OperatorArity::Binary,  "&=",       "aM"},
+        {OperatorType::oR,  OperatorArity::Binary,  "|=",       "oR"},
+        {OperatorType::eO,  OperatorArity::Binary,  "^=",       "eO"},
+        {OperatorType::ls,  OperatorArity::Binary,  "<<",       "ls"},
+        {OperatorType::rs,  OperatorArity::Binary,  ">>",       "rs"},
+        {OperatorType::lS,  OperatorArity::Binary,  "<<=",      "lS"},
+        {OperatorType::rS,  OperatorArity::Binary,  ">>=",      "rS"},
+        {OperatorType::eq,  OperatorArity::Binary,  "==",       "eq"},
+        {OperatorType::ne,  OperatorArity::Binary,  "!-",       "ne"},
+        {OperatorType::lt,  OperatorArity::Binary,  "<",        "lt"},
+        {OperatorType::gt,  OperatorArity::Binary,  ">",        "gt"},
+        {OperatorType::le,  OperatorArity::Binary,  "<=",       "le"},
+        {OperatorType::ge,  OperatorArity::Binary,  ">=",       "ge"},
+        {OperatorType::nt,  OperatorArity::Unary,   "!",        "nt"},
+        {OperatorType::aa,  OperatorArity::Binary,  "&&",       "aa"},
+        {OperatorType::oo,  OperatorArity::Binary,  "||",       "oo"},
+        {OperatorType::pp,  OperatorArity::Unary,   "++",       "pp"},
+        {OperatorType::mm,  OperatorArity::Unary,   "--",       "mm"},
+        {OperatorType::cm,  OperatorArity::Binary,  ",",        "cm"},
+        {OperatorType::pm,  OperatorArity::Binary,  "->*",      "pm"},
+        {OperatorType::pt,  OperatorArity::Binary,  "->",       "pt"},
+        {OperatorType::cl,  OperatorArity::Unary,   "()",       "cl"},
+        {OperatorType::ix,  OperatorArity::Binary,  "[]",       "ix"},
+        {OperatorType::qu,  OperatorArity::Unknown, "?",        "qu"},
+        {OperatorType::cv,  OperatorArity::Unary,   "",         "cv"},
+        {OperatorType::li,  OperatorArity::Unknown, "",         "li"},
+        {OperatorType::v,   OperatorArity::Unknown, "",         "v"},
+// clang-format on
+    }};
 
 OperatorName::OperatorName() noexcept
   : Node{Type::OperatorName}, typeinfo{nullptr}
@@ -89,6 +116,36 @@ std::unique_ptr<OperatorName> OperatorName::parse(State& s)
 bool OperatorName::isCastOperator() const noexcept
 {
   return this->typeinfo->operator_type == OperatorType::cv;
+}
+
+OperatorName::OperatorArity OperatorName::getArity() const noexcept
+{
+  return this->typeinfo->operator_arity;
+}
+
+bool OperatorName::isUnaryOp() const noexcept
+{
+  return this->typeinfo->operator_arity == OperatorArity::Unary;
+}
+
+bool OperatorName::isBinaryOp() const noexcept
+{
+  return this->typeinfo->operator_arity == OperatorArity::Binary;
+}
+
+bool OperatorName::isTernaryOp() const noexcept
+{
+  return this->typeinfo->operator_arity == OperatorArity::Ternary;
+}
+
+gsl::cstring_span<> OperatorName::getMangled() const noexcept
+{
+  return this->typeinfo->mangled_name;
+}
+
+gsl::cstring_span<> OperatorName::getOperatorSign() const noexcept
+{
+  return this->typeinfo->full_name;
 }
 
 OperatorName::OperatorTypeInfo const* OperatorName::findOperatorTypeInfo(
