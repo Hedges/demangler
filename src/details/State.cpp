@@ -1,5 +1,6 @@
 #include <demangler/details/State.hh>
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
@@ -27,6 +28,17 @@ bool State::empty() const noexcept
 char State::nextChar() const noexcept
 {
   return this->symbol[0];
+}
+
+bool State::hasNext(char c) const noexcept
+{
+  return (!this->empty()) && this->nextChar() == c;
+}
+
+bool State::hasNext(gsl::cstring_span<> needle) const noexcept
+{
+  return this->symbol.size() >= needle.size() &&
+         std::equal(needle.begin(), needle.end(), symbol.begin());
 }
 
 gsl::cstring_span<>::index_type State::charsRemaining() const noexcept

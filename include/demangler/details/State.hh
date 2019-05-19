@@ -18,6 +18,8 @@ struct State
   std::string toString() const;
   bool empty() const noexcept;
   char nextChar() const noexcept;
+  bool hasNext(char c) const noexcept;
+  bool hasNext(gsl::cstring_span<> needle) const noexcept;
   gsl::cstring_span<>::index_type charsRemaining() const noexcept;
   char peekChar(unsigned int idx) const noexcept;
   void registerUserSubstitution(Node const* node);
