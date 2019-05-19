@@ -7,6 +7,7 @@
 
 #include <demangler/details/node/BareFunctionType.hh>
 #include <demangler/details/node/BuiltinType.hh>
+#include <demangler/details/node/Decltype.hh>
 #include <demangler/details/node/Holder.hh>
 #include <demangler/details/node/Name.hh>
 #include <demangler/details/node/SourceName.hh>
@@ -237,7 +238,9 @@ std::unique_ptr<Type> Type::parseD(State& s, std::unique_ptr<Type>&& ret)
   {
   case 'T':
   case 't':
-    throw std::runtime_error("Unsupported type DT/Dt (decltype expr)");
+    s.symbol = {s.symbol.data() - 1, s.symbol.size() + 1};
+    ret->addNode(Decltype::parse(s));
+    return std::move(ret);
   case 'p':
     s.advance(1);
     if (s.empty())

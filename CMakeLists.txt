@@ -38,8 +38,10 @@ set(SRCS
   src/details/node/BuiltinSubstitution.cpp
   src/details/node/BuiltinType.cpp
   src/details/node/Constructor.cpp
+  src/details/node/Decltype.cpp
   src/details/Node.cpp
   src/details/node/Encoding.cpp
+  src/details/node/Expression.cpp
   src/details/node/ExprPrimary.cpp
   src/details/node/Holder.cpp
   src/details/node/LocalName.cpp
@@ -57,6 +59,7 @@ set(SRCS
   src/details/node/TemplateParam.cpp
   src/details/node/Type.cpp
   src/details/node/UnqualifiedName.cpp
+  src/details/node/UnresolvedName.cpp
   src/details/node/UnscopedName.cpp
   src/details/node/UnscopedTemplateName.cpp
   src/details/node/UserSubstitution.cpp

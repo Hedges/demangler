@@ -1,5 +1,6 @@
 #include <demangler/details/node/SourceName.hh>
 
+#include <algorithm>
 #include <cctype>
 #include <stdexcept>
 
@@ -27,7 +28,14 @@ SourceName::SourceName(clone_tag, SourceName const& b)
 
 std::ostream& SourceName::print(PrintOptions const&, std::ostream& out) const
 {
-  printStringSpan(out, this->name);
+  auto const global_namespace_key = gsl::cstring_span<>{"_GLOBAL__N_"};
+  if (this->name.size() >= global_namespace_key.size() &&
+      std::equal(global_namespace_key.begin(),
+                 global_namespace_key.end(),
+                 this->name.begin()))
+    out << "(anonymous namespace)";
+  else
+    printStringSpan(out, this->name);
   return out;
 }
 

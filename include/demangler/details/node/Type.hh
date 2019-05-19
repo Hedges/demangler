@@ -42,6 +42,7 @@ public:
 
 private:
   static std::unique_ptr<Type> parseD(State& s, std::unique_ptr<Type>&& ret);
+  static std::unique_ptr<Type> parseDt(State& s, std::unique_ptr<Type>&& ret);
   static std::unique_ptr<Type> parseDp(State& s, std::unique_ptr<Type>&& ret);
   static std::unique_ptr<Type> parseF(State& s, std::unique_ptr<Type>&& ret);
 
