@@ -88,17 +88,25 @@ bool Node::isEmpty() const noexcept
   return this->empty;
 }
 
-void Node::dumpAST(std::ostream& out, size_t indent) const
+void Node::dumpAST(std::ostream& out, size_t indent, int maxdepth, int depth) const
 {
   std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
   out << '{' << ' ' << nodeTypeToString(this->getType());
   if (this->getNodeCount() > 0)
   {
     out << '\n';
-    for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
+    if (maxdepth == 0 || maxdepth != depth)
     {
-      this->getNode(i)->dumpAST(out, indent + 1);
-      out << '\n';
+      for (auto i = size_t{0}; i < this->getNodeCount(); ++i)
+      {
+        this->getNode(i)->dumpAST(out, indent + 1, maxdepth, depth + 1);
+        out << '\n';
+      }
+    }
+    else
+    {
+      std::fill_n(std::ostream_iterator<char>(out), indent + 1, ' ');
+      out << "{ ... }\n";
     }
     std::fill_n(std::ostream_iterator<char>(out), indent, ' ');
     out << '}';

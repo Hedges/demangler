@@ -65,7 +65,10 @@ public:
   void assignTemplateSubstitutions(State const& s);
   bool isEmpty() const noexcept;
 
-  void dumpAST(std::ostream& out, size_t indent = 0) const;
+  void dumpAST(std::ostream& out,
+               size_t indent = 0,
+               int maxdepth = 0,
+               int depth = 0) const;
 
 protected:
   struct clone_tag
