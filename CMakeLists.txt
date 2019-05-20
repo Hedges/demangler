@@ -34,6 +34,7 @@ include_directories(
 set(SRCS
   src/demangler.cpp
   src/details/CVQualifiers.cpp
+  src/details/node/ArrayType.cpp
   src/details/node/BareFunctionType.cpp
   src/details/node/BuiltinSubstitution.cpp
   src/details/node/BuiltinType.cpp

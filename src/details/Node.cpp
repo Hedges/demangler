@@ -15,6 +15,7 @@ constexpr char const* nodeTypeToString(Node::Type t)
 #define MAKE_CASE(t)  \
   case Node::Type::t: \
     return #t;
+    MAKE_CASE(ArrayType)
     MAKE_CASE(BareFunctionType)
     MAKE_CASE(BuiltinSubstitution)
     MAKE_CASE(BuiltinType)

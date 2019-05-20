@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <unordered_map>
 
+#include <demangler/details/node/ArrayType.hh>
 #include <demangler/details/node/BareFunctionType.hh>
 #include <demangler/details/node/BuiltinType.hh>
 #include <demangler/details/node/Decltype.hh>
@@ -155,6 +156,8 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
     s.advance(1);
     generates_substitution = false;
   }
+  else if (s.nextChar() == 'A')
+    ret->addNode(ArrayType::parse(s));
   else if (s.nextChar() == 'D')
   {
     s.advance(1);

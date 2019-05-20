@@ -20,6 +20,7 @@ public:
   using string_type = gsl::cstring_span<>;
   enum class Type
   {
+    ArrayType,
     BareFunctionType,
     BuiltinSubstitution,
     BuiltinType,
