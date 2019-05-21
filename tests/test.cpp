@@ -290,7 +290,7 @@ constexpr auto const ext_demangle_nsamples =
         want_no_params);                                               \
   CHECK(demangler::demangle(input, demangler::NoTemplateParamTag{}) == \
         want_no_template_param);                                       \
-  CHECK(demangler::demangle(input, demangler::MinimalTag{}) == want_minimal);
+  CHECK(demangler::demangle(input, demangler::MinimalTag{}) == want_minimal)
 
 TEST_CASE("Not-mangled symbol")
 {
