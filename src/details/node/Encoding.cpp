@@ -41,8 +41,8 @@ std::ostream& Encoding::print(PrintOptions const& opt, std::ostream& out) const
         static_cast<Name const&>(*this->getNode(node_index)).getCVQuals();
     if (!cvquals.empty())
     {
-      out << prefix << ' ';
-      printCVQualifiers(out, cvquals);
+      out << prefix;
+      printCVRefQualifiers(out, cvquals);
     }
   };
 

@@ -8,47 +8,45 @@ namespace details
 {
 namespace
 {
-constexpr bool isCVQualifier(char c)
-{
-  return c == 'K' || c == 'v' || c == 'r';
+auto const cvr_qualifiers_map = std::unordered_map<char, std::string>{
+    {'K', " const"},
+    {'O', "&&"},
+    {'P', "*"},
+    {'R', "&"},
+    {'V', " volatile"},
+    {'r', " restrict"},
+};
 }
-}
-gsl::cstring_span<> parseCVQualifiers(State& s)
-{
-  assert(!s.empty());
 
-  if (!isCVQualifier(s.nextChar()))
-    return {};
-  auto const* pointer = s.symbol.data();
-  do
-  {
+gsl::cstring_span<> extractCVRefQualifiers(State& s)
+{
+  auto const* begin_cvrptr = s.symbol.data();
+
+  while (!s.empty() &&
+         cvr_qualifiers_map.find(s.nextChar()) != cvr_qualifiers_map.end())
     s.advance(1);
-  } while (!s.empty() && isCVQualifier(s.nextChar()));
-  return {pointer, s.symbol.data() - pointer};
+  return {begin_cvrptr, (s.symbol.data() - begin_cvrptr)};
 }
 
-std::ostream& printCVQualifiers(std::ostream& out, gsl::cstring_span<> cvquals)
+void printCVRefQualifiers(std::ostream& out, gsl::cstring_span<> cvref_qualifiers)
 {
-  for (auto i = gsl::cstring_span<>::index_type{0}; i < cvquals.size(); ++i)
+  for (auto rit = cvref_qualifiers.rbegin(); rit != cvref_qualifiers.rend();
+       ++rit)
   {
-    if (i)
-      out << ' ';
-    switch (cvquals[i])
-    {
-    case 'K':
-      out << "const";
-      break;
-    case 'v':
-      out << "volatile";
-      break;
-    case 'r':
-      out << "restrict";
-      break;
-    default:
-      throw std::runtime_error("Invalid cv-qualifier to print");
-    };
+    auto const qual = *rit;
+    auto const qualit = cvr_qualifiers_map.find(qual);
+    if (qualit == cvr_qualifiers_map.end())
+      throw std::logic_error(std::string("Invalid cv-qualifier: ") + qual);
+    out << qualit->second;
   }
-  return out;
+}
+
+std::string collapseCVRefQualifiers(gsl::cstring_span<> lcvref,
+                                    gsl::cstring_span<> rcvref) noexcept
+{
+  if (lcvref[0] == 'R' && rcvref[0] == 'L')
+    return gsl::to_string(rcvref);
+  return gsl::to_string(lcvref);
 }
 }
 }

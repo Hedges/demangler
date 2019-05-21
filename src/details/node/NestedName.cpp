@@ -72,7 +72,7 @@ std::unique_ptr<NestedName> NestedName::parse(State& s)
   auto lastnode = std::unique_ptr<Prefix>{nullptr};
   auto prefixnode = std::make_unique<Prefix>();
 
-  ret->cvquals = parseCVQualifiers(s);
+  ret->cvquals = extractCVRefQualifiers(s);
   lastnode = Prefix::parse(s, {}, false);
   if (lastnode->getNode(0)->getType() != Type::Substitution)
   {
