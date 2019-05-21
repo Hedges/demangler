@@ -189,15 +189,23 @@ std::unique_ptr<Type> Type::parse(State& s, bool parse_template_args)
   }
   if (generates_substitution)
   {
-    if (!ret->cvref_qualifiers.empty())
+    auto *subst_node = static_cast<Type*>(s.addOrphanedSubstitution(ret->deepClone()));
+    subst_node->cvref_qualifiers = {};
+    s.user_substitutions.emplace_back(subst_node);
+  }
+  if (!ret->cvref_qualifiers.empty())
+  {
+    auto qualifiers = ret->cvref_qualifiers;
+    if (qualifiers[0] == 'R')
+      qualifiers = qualifiers.subspan(1);
+    for (auto i = 1; i <= qualifiers.size(); ++i)
     {
-      auto tmp = ret->cvref_qualifiers;
-      ret->cvref_qualifiers = {};
-      ret->substitution_made = ret->deepClone();
-      s.user_substitutions.emplace_back(ret->substitution_made.get());
-      ret->cvref_qualifiers = tmp;
+      auto *subst_node = static_cast<Type*>(s.addOrphanedSubstitution(ret->deepClone()));
+      subst_node->cvref_qualifiers = qualifiers.subspan(0, i);
+      s.user_substitutions.emplace_back(subst_node);
     }
-    s.user_substitutions.emplace_back(ret.get());
+    if (ret->cvref_qualifiers[0] == 'R')
+      s.user_substitutions.emplace_back(ret.get());
   }
   return ret;
 }

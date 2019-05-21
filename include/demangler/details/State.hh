@@ -25,6 +25,7 @@ struct State
   void registerUserSubstitution(Node const* node);
   Node const* getUserSubstitution(std::size_t index) const;
   void dumpSubstitutions() const;
+  Node* addOrphanedSubstitution(std::unique_ptr<Node>&& orphan);
 
   gsl::cstring_span<> symbol;
   Node* parent;
@@ -38,6 +39,7 @@ struct State
   bool awaiting_template;
   std::function<void(State& s)> template_substitutions_resolver;
   std::vector<Node const*> template_substitutions;
+  std::vector<std::unique_ptr<Node>> orphaned_substitutions;
 };
 }
 }

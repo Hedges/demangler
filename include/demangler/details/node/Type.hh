@@ -49,7 +49,6 @@ private:
   void printDpNode(PrintOptions const& opt, std::ostream& out) const;
 
   gsl::cstring_span<> cvref_qualifiers;
-  std::unique_ptr<Node> substitution_made;
   bool is_dp{false};
 };
 }

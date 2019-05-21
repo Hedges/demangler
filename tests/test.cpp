@@ -453,6 +453,51 @@ TEST_CASE("Substitutions")
     // clang-format on
     CHECK_TEST(data);
   }
+
+  SECTION("Pointers and Reference substitutions")
+  {
+    SECTION("char const*")
+    {
+      // clang-format off
+      auto const data = TestData{
+        "_Z1fPKcS0_",
+        "f(char const*, char const*)",
+        "f",
+        "f(char const*, char const*)",
+        "f"
+      };
+      // clang-format on
+      CHECK_TEST(data);
+    }
+
+    SECTION("Checking all substitutions on V*&")
+    {
+      // clang-format off
+      auto const data = TestData{
+        "_Z1fRP1VS_S0_S1_1TS2_",
+        "f(V*&, V, V*, V*&, T, T)",
+        "f",
+        "f(V*&, V, V*, V*&, T, T)",
+        "f"
+      };
+      // clang-format on
+      CHECK_TEST(data);
+    }
+
+    SECTION("cv-ref'd substitution's substitutions")
+    {
+      // clang-format off
+      auto const data = TestData{
+        "_Z1f1VRKS_PS0_",
+        "f(V, V const&, V const*)",
+        "f",
+        "f(V, V const&, V const*)",
+        "f"
+      };
+      // clang-format on
+      CHECK_TEST(data);
+    }
+  }
 }
 
 TEST_CASE("User-defined types")

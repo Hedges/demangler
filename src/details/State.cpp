@@ -76,5 +76,11 @@ void State::dumpSubstitutions() const
     std::cout << std::endl;
   }
 }
+
+Node* State::addOrphanedSubstitution(std::unique_ptr<Node>&& orphan)
+{
+  this->orphaned_substitutions.emplace_back(std::move(orphan));
+  return this->orphaned_substitutions.back().get();
+}
 }
 }
