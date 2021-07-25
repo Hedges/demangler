@@ -104,7 +104,7 @@ private:
 
   struct OperatorTypeInfo
   {
-    constexpr OperatorTypeInfo(OperatorType type,
+    OperatorTypeInfo(OperatorType type,
                                OperatorArity arity,
                                gsl::cstring_span<> full,
                                gsl::cstring_span<> mangled)

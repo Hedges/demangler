@@ -65,11 +65,29 @@ std::unique_ptr<BareFunctionType> BareFunctionType::parse(State& s,
     ret->return_type = node::Type::parse(s);
   if (!in_argument)
     while (!s.empty() && s.nextChar() != 'E')
-      ret->addNode(node::Type::parse(s));
+    {
+      if (s.nextChar() == '@')
+      {
+        s.advance(s.symbol.length());
+      }
+      else
+      {
+        ret->addNode(node::Type::parse(s));
+      }
+    }
   else
   {
     while (!s.empty() && s.nextChar() != 'E')
-      ret->addNode(node::Type::parse(s));
+    {
+      if (s.nextChar() == '@')
+      {
+        s.advance(s.symbol.length());
+      }
+      else
+      {
+        ret->addNode(node::Type::parse(s));
+      }
+    }
     if (s.empty())
       throw std::runtime_error("Unfinished BareFunctionType");
     s.advance(1);

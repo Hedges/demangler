@@ -29,7 +29,7 @@ public:
                       std::ostream& out) const override final;
   std::unique_ptr<Node> deepClone() const override final;
 
-  static constexpr bool isMangled(string_type symbol) noexcept
+  static bool isMangled(string_type symbol) noexcept
   {
     return symbol.size() > 2 && symbol[0] == '_' && symbol[1] == 'Z';
   }
